@@ -7,6 +7,9 @@ and what to do if something goes wrong.
 vcard2fritzXML is litte Tool written in Java to convert a vcard file into an XML file 
 with the format of a Fritz!Box addressbook import file.
 
+	This Software is not tested and is in a pre alpha state. Don't use it until version 1.0 is released.
+
+
 # SOFTWARE REQUIREMENTS
 
 You need at least
