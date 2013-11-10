@@ -47,6 +47,18 @@ public class Number {
 	}
 
 	/**
+	 * Instantiate a number (constructor).
+	 * 
+	 * @param number Number as String representation.
+	 */
+	public Number(String number, org.berkholz.vcard2fritzXML.NumberType numberType) {
+		this.number = Number.validateNumber(number);
+		if (this.number != null) {
+			this.type = numberType;
+		}
+	}
+	
+	/**
 	 * Returns the number of the contact.
 	 * 
 	 * @return The number as String.
