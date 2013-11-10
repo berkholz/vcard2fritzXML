@@ -1,6 +1,3 @@
-/**
- * 
- */
 package org.berkholz.vcard2fritzXML;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -51,7 +48,7 @@ public class Number {
 	 * 
 	 * @param number Number as String representation.
 	 */
-	public Number(String number, org.berkholz.vcard2fritzXML.NumberType numberType) {
+	public Number(String number, NumberType numberType) {
 		this.number = Number.validateNumber(number);
 		if (this.number != null) {
 			this.type = numberType;
