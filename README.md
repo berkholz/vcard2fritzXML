@@ -7,6 +7,10 @@ and what to do if something goes wrong.
 vcard2fritzXML is litte Tool written in Java to convert a vcard file into an XML file 
 with the format of a Fritz!Box addressbook import file.
 
+# TESTED
+
+vcard2fritzXML is tested on the following environments:
+* Mac OS X 10.8.5, Maven 3.0.4, Oracle Java 1.7.0_45, FRITZ!OS 05.53
 
 # SOFTWARE REQUIREMENTS
 
@@ -14,7 +18,7 @@ You need at least
 
  * git 1.7
  * Oracle Java 1.7
- * Maven 3.0.5
+ * Maven 3.0.4
 
 
 # DOWNLOAD
@@ -62,6 +66,7 @@ On an Mac you can use the Addressbook:
 * Save the file to a location where you can find it on a commandline, mostly everywhere ;)
 
 Now you can convert the vcard file to the Fritz!Box xml file:
+
     java -jar /PATH/TO/vcard2fritzXML-1.0-SNAPSHOT-jar-with-dependencies.jar -f "<PATH/TO/VCARDFILE.vcf>" -o "<PATH/TO/FRITZ!BOX_XML_FILE.xml>" -n "Addressbook"
 
 Go to your Fritz!Box and create a new Telphonebook named "Addressbook" and recover your Telephonebook with the XML file.
