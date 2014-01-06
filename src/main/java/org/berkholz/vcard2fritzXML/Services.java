@@ -10,16 +10,20 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
+ * Class for the Services XML element in the address book of the fritz box
+ * import file.
+ * 
  * @author Marcel Berkholz
  * 
  */
-//None of the fields or properties is bound to XML unless they are specifically
-//annotated with some of the JAXB annotations.
+// None of the fields or properties is bound to XML unless they are specifically
+// annotated with some of the JAXB annotations.
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "services")
 public class Services {
 
 	@XmlElement(name = "email")
+	// mail address of a contact
 	private EMail email;
 
 	@XmlAttribute
@@ -35,7 +39,8 @@ public class Services {
 	/**
 	 * Instantiate the services with mail address.
 	 * 
-	 * @param email Mail address for the services.
+	 * @param email
+	 *            Mail address for the services.
 	 */
 	public Services(String email) {
 		this.email = new EMail(email);
@@ -53,17 +58,18 @@ public class Services {
 	/**
 	 * Get the mail address.
 	 * 
-	 * @return Returns a valid mail address.
+	 * @return Returns a valid mail address as String.
 	 */
 	public String getEmailAsString() {
 		return this.email.getEmail();
 	}
-	
+
 	/**
-	 * Set the mail address.
+	 * Set the mail address. Be carefull, the mail address is actually not
+	 * validated. It should be in a valid form.
 	 * 
 	 * @param email
-	 *            Mail address as String to set..
+	 *            Set the mail address to the given mail address.
 	 */
 	public void setEmail(EMail email) {
 		// TODO: validate the mail address or is it done with new EMail()?
