@@ -76,4 +76,14 @@ public class EMail {
 		this.email = email;
 	}
 
+	/**
+	 * Validate a mail address.
+	 * 
+	 * @param email
+	 *            Mail address as String representation.
+	 * @return true if mail address is valid otherwise false
+	 */
+	protected boolean validateEmail(String email) {
+		return false;
+	}
 }
