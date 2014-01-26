@@ -55,7 +55,7 @@ public class Main {
 	 * @return The first mail address found in the mailList.
 	 */
 	public static String getEmailAddress(List<EmailType> emailList, String mailType) {
-		// TODO: funzt nicht
+		// TODO: funzt nicht, wird zur Zeit nicht verwendet
 		for (EmailType mail : emailList) {
 			// System.out.println(mail.getValue());
 			// System.out.println(mail.getTypes());
@@ -77,7 +77,7 @@ public class Main {
 	 * @return The first telephone number found in the telephoneList.
 	 */
 	public static String getTelephoneNumberByType(List<TelephoneType> telephoneList, String telephoneType) {
-		// TODO: Unterschied zwischen work und home fax wird nicht erkannt
+		// TODO: difference between work fax and home fax is not recognized
 		for (TelephoneType tel : telephoneList) {
 			if (tel.getTypes().toString().contains(telephoneType)) {
 				return tel.getText();
@@ -89,7 +89,8 @@ public class Main {
 
 	/**
 	 * Prints out the vcardfile to stdout.
-	 * @param FileInputStream 
+	 * 
+	 * @param FileInputStream
 	 */
 	public static void printVCardFile(FileInputStream fis) {
 
@@ -101,7 +102,6 @@ public class Main {
 			}
 			fis.close();
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
 		System.out.flush();
@@ -147,37 +147,49 @@ public class Main {
 			// get all vcard entries from file
 			vcard = Ezvcard.parse(file).all();
 
-			// iterate of any vcard entries
-			Iterator<VCard> vcardIterator = vcard.iterator();
-
-			while (vcardIterator.hasNext()) {
-				int uidCounter = 1;
-				// get next vcard entry
-				VCard vcardElement = vcardIterator.next();
-
-				// create new contact to represent the actual vcard element
-				Contact c1 = new Contact();
-
-				// set contact informations, like modtime, uid, name, mail,
-				// phone etc.
-				c1.setMod_time();
-				c1.setUid(uidCounter++);
-				c1.setServices(vcardElement.getEmails().get(0).getValue());
-
-				// TODO: nach mehreren Begriffen suchen, wie cell, mobile etc.
-				c1.setTelephony(new Telephony(
-						Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"), Main
-								.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"), Main
-								.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "cell")));
-
-				c1.setPerson(new Person(vcardElement.getFormattedName().getValue()));
-
-				// add contact to out phonebook element
-				pb.addContact(c1);
-			}
 		} catch (Exception e) {
-			System.out.println("Datei " + cmdOptions.vcardFile
-					+ " konnte nicht geöffnet werden und schmiss folgenden Fehler: " + e.getStackTrace());
+			System.out.println("Error while opening file: " + cmdOptions.vcardFile + " StackTrace:\n"
+					+ e.getStackTrace());
+		}
+
+		// iterate of any vcard entries
+		Iterator<VCard> vcardIterator = vcard.iterator();
+
+		// initialize the uid counter for contacts
+		int uidCounter = 1;
+
+		while (vcardIterator.hasNext()) {
+			// get next vcard entry
+			VCard vcardElement = vcardIterator.next();
+
+			// create new contact to represent the actual vcard element
+			Contact c1 = new Contact();
+
+			// set contact informations, like modtime, uid, name, mail,
+			// phone etc.
+			c1.setMod_time();
+			c1.setUid(uidCounter++);
+
+			String tmpmail = new String();;
+			// System.out.println(vcardElement.getEmails().get(0).getValue());
+
+			if ( vcardElement.getEmails().isEmpty()) {
+				tmpmail = "";
+			}else {
+				tmpmail = vcardElement.getEmails().get(0).getValue();
+			}
+			c1.setServices(tmpmail);
+
+			// TODO: nach mehreren Begriffen suchen, wie cell, mobile etc.
+			c1.setTelephony(new Telephony(Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"),
+					Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"), Main
+							.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "cell")));
+
+			c1.setPerson(new Person(vcardElement.getFormattedName().getValue()));
+
+			// add contact to out phonebook element
+			pb.addContact(c1);
+			c1 = null;
 		}
 
 		JAXBContext context = JAXBContext.newInstance(Phonebooks.class);
