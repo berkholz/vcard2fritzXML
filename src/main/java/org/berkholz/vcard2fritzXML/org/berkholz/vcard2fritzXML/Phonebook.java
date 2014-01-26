@@ -78,8 +78,8 @@ public class Phonebook {
 	 */
 	public void addContact(Contact contact) {
 		if (!contacts.add(contact)) {
-			// TODO: Exception einfügen
-			System.out.print("Fehler beim hinzufuegen eines Contacts.");
+			// TODO: Exception eventuell einfügen
+			System.out.print("Error while inserting a contact.");
 		}
 	}
 }
