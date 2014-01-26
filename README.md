@@ -4,7 +4,7 @@ and what to do if something goes wrong.
 
 # WHAT IS vcard2fritzXML?
 
-vcard2fritzXML is litte Tool written in Java to convert a vcard file into an XML file 
+vcard2fritzXML is litte tool written in Java to convert a vcard file into an XML file 
 with the format of a Fritz!Box addressbook import file.
 
 # TESTED
@@ -16,7 +16,6 @@ vcard2fritzXML is tested on the following environments:
 # SOFTWARE REQUIREMENTS
 
 You need at least
-
  * git 1.7
  * Oracle Java 1.7
  * Maven 3.0.4
@@ -38,7 +37,7 @@ To compile and generate JAR file with and without dependencies call:
 
 # COMMANDLINE USAGE
 
-It depends on the jAR file.
+It depends on the JAR file.
 
 ## JAR file with no dependencies
 
