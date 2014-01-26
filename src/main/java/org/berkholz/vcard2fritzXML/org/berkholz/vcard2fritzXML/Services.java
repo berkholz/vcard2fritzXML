@@ -10,8 +10,7 @@ import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlType;
 
 /**
- * Class for the Services XML element in the address book of the fritz box
- * import file.
+ * Class for the Services XML element in the address book of the fritz box import file.
  * 
  * @author Marcel Berkholz
  * 
@@ -44,9 +43,9 @@ public class Services {
 	 */
 	public Services(String email) {
 		try {
-			this.email = new EMail(email);	
+			this.email = new EMail(email);
 		} catch (Exception e) {
-			System.out.println("No valid email address given:"+e.getLocalizedMessage());
+			System.out.println("No valid email address given:" + e.getLocalizedMessage());
 		}
 	}
 
@@ -69,14 +68,18 @@ public class Services {
 	}
 
 	/**
-	 * Set the mail address. Be carefull, the mail address is actually not
-	 * validated. It should be in a valid form.
+	 * Set the mail address. Be carefull, the mail address is actually not validated. It should be in a valid form.
 	 * 
 	 * @param email
 	 *            Set the mail address to the given mail address.
+	 * @throws Exception 
 	 */
-	public void setEmail(EMail email) {
-		// TODO: validate the mail address or is it done with new EMail()?
-		this.email = email;
+	public void setEmail(EMail email) throws Exception {
+		if (EMail.validateEmail(email.getEmail())) {
+			this.email = email;
+		} else {
+			throw new Exception("No valid mail address given. Could not assign the mail address " + email.getEmail()
+					+ " as child element to the XML element Services.");
+		}
 	}
 }
