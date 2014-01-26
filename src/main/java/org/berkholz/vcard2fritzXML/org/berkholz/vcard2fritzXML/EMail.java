@@ -11,8 +11,6 @@ import javax.xml.bind.annotation.XmlValue;
 
 import org.apache.commons.validator.routines.EmailValidator;
 
-
-
 /**
  * Mail address of the contact.
  * 
@@ -21,8 +19,8 @@ import org.apache.commons.validator.routines.EmailValidator;
  */
 
 /*
- * None of the fields or properties is bound to XML unless they are specifically
- * annotated with some of the JAXB annotations.
+ * None of the fields or properties is bound to XML unless they are specifically annotated with some of the JAXB
+ * annotations.
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "email")
@@ -99,10 +97,15 @@ public class EMail {
 	 * @return true if mail address is valid otherwise false
 	 */
 	public static boolean validateEmail(String email) {
-		// Get an EmailValidator
-		EmailValidator validator = EmailValidator.getInstance();
+		if (email == "") {
+			// if no mail is in the contact, we accept an empty string
+			return true;
+		} else {
+			// Get an EmailValidator
+			EmailValidator validator = EmailValidator.getInstance();
 
-		// Validate an email address
-		return validator.isValid(email);
+			// Validate an email address
+			return validator.isValid(email);
+		}
 	}
 }
