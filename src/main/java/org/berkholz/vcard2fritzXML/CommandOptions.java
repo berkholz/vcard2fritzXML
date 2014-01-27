@@ -56,7 +56,8 @@ public class CommandOptions {
 	}
 
 	/**
-	 * Checks the options, if all recommended options are given and if excluding parameters are met.
+	 * Checks the options, if all recommended options are given and if excluding
+	 * parameters are met.
 	 */
 	public void checkOptions() {
 		if (cmd.hasOption("h")) {
@@ -66,34 +67,35 @@ public class CommandOptions {
 
 		if (cmd.hasOption("o")) {
 			this.outputFile = cmd.getOptionValue("o");
-			System.out.println("Printing out to file: " + this.outputFile);
 		}
 
 		// check if both options (-f and -d) are given or not.
 		if (!cmd.hasOption("d") & !cmd.hasOption("f")) {
-			System.out.println("You have to specify either the -d or -f option.");
+			System.out
+					.println("You have to specify either the -d or -f option.");
 			System.exit(1);
 		} else if (cmd.hasOption("d") & cmd.hasOption("f")) {
-			System.out.println("You have to specify only one of the -d or -f options, not both.");
+			System.out
+					.println("You have to specify only one of the -d or -f options, not both.");
 			System.exit(1);
 		}
 
 		if (cmd.hasOption("d")) {
-			System.out.println("The import of a directory within vcards is not yet implemented");
+			System.out
+					.println("The import of a directory within vcards is not yet implemented");
 			System.exit(1);
 			// TODO: Implement the import of vcards from a directory
 			// vcardDirectory = cmd.getOptionValue("d");
-			// System.out.println("Reading vcard files from directory: " + vcardDirectory);
+			// System.out.println("Reading vcard files from directory: " +
+			// vcardDirectory);
 		}
 
 		if (cmd.hasOption("f")) {
 			vcardFile = cmd.getOptionValue("f");
-			System.out.println("Reading vcard file: " + vcardFile);
 		}
 
 		if (cmd.hasOption("n")) {
 			phonebookName = cmd.getOptionValue("n");
-			System.out.println("Name of phonebook is " + this.phonebookName);
 		}
 
 	}
