@@ -15,7 +15,9 @@ import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
 
-// libraries for command line parsing
+//libraries for command line parsing
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
 // libraries for vcard operations
@@ -33,29 +35,16 @@ public class Main {
 	/**
 	 * Just simply print a help.
 	 */
-	public static void printHelp() {
-		System.out.println("Possible command line options: ");
-		System.out
-				.println("\t -d <DIR_NAME> \t\t Directory to search for vcards. Every contact is given in a single vcard file. [NOT YET IMPLEMENTED.]");
-		System.out
-				.println("\t -f <FILE_NAME> | - \t Read all contacts from Vcard file or from stdin.");
-		System.out
-				.println("\t -o <FILE_NAME> \t Save XML output to file <FILE_NAME>.");
-		System.out
-				.println("\t -n <PHONEBOOK_NAME> \t Rename phonebook to <PHONEBOOK_NAME>.");
-		System.out
-				.println("\t -v|--verbose \t\t Be verbose. [NOT YET IMPLEMENTED.]");
-		System.out.println("\t -h|--help \t\t Show help.");
+	public static void printHelp(Options options) {
+		HelpFormatter formatter = new HelpFormatter();
+		formatter.printHelp("vcard2fritzXML", options);
+
 		System.out.println("\nExamples: ");
-		System.out
-		.println("\tvcard2fritzXML -f c:\\path\\to\\vcards\\all_vcards.vcard > fritz_phonebook.xml");
-		System.out
-		.println("\tcat test.vcf | vcard2fritzXML -f - > fritz_phonebook.xml ");
-		System.out
-				.println("\tvcard2fritzXML -d c:\\path\\to\\vcards\\ > fritz_phonebook.xml");
-		System.out
-				.println("\tvcard2fritzXML -d c:\\path\\to\\vcards\\ -o fritz_phonebook.xml\n");
-		
+		System.out.println("\tvcard2fritzXML -f c:\\path\\to\\vcards\\all_vcards.vcard > fritz_phonebook.xml");
+		System.out.println("\tcat test.vcf | vcard2fritzXML -f - > fritz_phonebook.xml ");
+		System.out.println("\tvcard2fritzXML -d c:\\path\\to\\vcards\\ > fritz_phonebook.xml");
+		System.out.println("\tvcard2fritzXML -d c:\\path\\to\\vcards\\ -o fritz_phonebook.xml\n");
+
 	}
 
 	/**
@@ -65,8 +54,7 @@ public class Main {
 	 * @param mailType
 	 * @return The first mail address found in the mailList.
 	 */
-	public static String getEmailAddress(List<EmailType> emailList,
-			String mailType) {
+	public static String getEmailAddress(List<EmailType> emailList, String mailType) {
 		// TODO: funzt nicht, wird zur Zeit nicht verwendet
 		for (EmailType mail : emailList) {
 			// System.out.println(mail.getValue());
@@ -88,8 +76,7 @@ public class Main {
 	 * @param telephoneType
 	 * @return The first telephone number found in the telephoneList.
 	 */
-	public static String getTelephoneNumberByType(
-			List<TelephoneType> telephoneList, String telephoneType) {
+	public static String getTelephoneNumberByType(List<TelephoneType> telephoneList, String telephoneType) {
 		// TODO: difference between work fax and home fax is not recognized
 		for (TelephoneType tel : telephoneList) {
 			if (tel.getTypes().toString().contains(telephoneType)) {
@@ -128,8 +115,7 @@ public class Main {
 	 * @throws ParseException
 	 * 
 	 */
-	public static void main(String[] args) throws IOException, JAXBException,
-			ParseException {
+	public static void main(String[] args) throws IOException, JAXBException, ParseException {
 
 		// Variables for command option parsing
 		List<VCard> vcard = null;
@@ -159,24 +145,18 @@ public class Main {
 				// get all vcard entries from file
 				vcard = Ezvcard.parse(file).all();
 			} catch (Exception e) {
-				System.out.println("Error while opening file: "
-						+ cmdOptions.vcardFile + " StackTrace:\n"
+				System.out.println("Error while opening file: " + cmdOptions.vcardFile + " StackTrace:\n"
 						+ e.getStackTrace());
 			}
 		} else {
 			try {
-				InputStreamReader inStreamReader = new InputStreamReader(
-						System.in);
+				InputStreamReader inStreamReader = new InputStreamReader(System.in);
 				// get all vcard entries from stdin
 				vcard = Ezvcard.parse(inStreamReader).all();
 			} catch (IOException ioe) {
-				System.out.println("Error while opening the InputStreamReader"
-						+ ioe.getLocalizedMessage());
+				System.out.println("Error while opening the InputStreamReader" + ioe.getLocalizedMessage());
 			}
 		}
-
-		// print out the VCardFile if wanted
-		// Main.printVCardFile(new FileInputStream(file));
 
 		// iterate of any vcard entries
 		Iterator<VCard> vcardIterator = vcard.iterator();
@@ -191,14 +171,7 @@ public class Main {
 			// create new contact to represent the actual vcard element
 			Contact c1 = new Contact();
 
-			// set contact informations, like modtime, uid, name, mail,
-			// phone etc.
-			c1.setMod_time();
-			c1.setUid(uidCounter++);
-
 			String tmpmail = new String();
-			;
-			// System.out.println(vcardElement.getEmails().get(0).getValue());
 
 			if (vcardElement.getEmails().isEmpty()) {
 				tmpmail = "";
@@ -208,14 +181,23 @@ public class Main {
 			c1.setServices(tmpmail);
 
 			// TODO: nach mehreren Begriffen suchen, wie cell, mobile etc.
-			c1.setTelephony(new Telephony(Main.getTelephoneNumberByType(
-					vcardElement.getTelephoneNumbers(), "home"), Main
-					.getTelephoneNumberByType(
-							vcardElement.getTelephoneNumbers(), "work"), Main
-					.getTelephoneNumberByType(
-							vcardElement.getTelephoneNumbers(), "cell")));
+			Telephony tp = new Telephony(Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"),
+					Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"),
+					Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "cell"));
+
+			c1.setTelephony(tp);
+
+			// skip contact with no mail address and telephone numbers if
+			// command line option -s is given
+			if (cmdOptions.skipEmptyContacts && tp.isEmpty() && c1.getServices().getEmail().isEmpty()) {
+				System.out.println("Skipping: " + vcardElement.getFormattedName().getValue());
+				continue;
+			}
 
 			c1.setPerson(new Person(vcardElement.getFormattedName().getValue()));
+
+			c1.setMod_time();
+			c1.setUid(uidCounter++);
 
 			// add contact to out phonebook element
 			pb.addContact(c1);
