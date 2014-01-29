@@ -50,10 +50,13 @@ public class Contact {
 	}
 
 	/**
+	 * Checks if telephone numbers and mail address of the contact are empty.
 	 * 
+	 * @return Returns true if all telephone numbers and the mail address of the
+	 *         contact are not set or null. Otherwise false.
 	 */
 	public boolean isEmpty() {
-		if (this.services.getEmail().isEmpty() && this.telephony.equals(setup)) {
+		if (this.services.getEmail().isEmpty() && this.telephony.isEmpty()) {
 			return true;
 		} else {
 			return false;
