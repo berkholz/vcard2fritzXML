@@ -12,12 +12,13 @@ with the format of a Fritz!Box addressbook import file.
 vcard2fritzXML is tested on the following environments:
 * Mac OS X 10.8.5, Maven 3.0.4, Oracle Java 1.7.0_45, FRITZ!OS 05.53
 * Windows 8.1, Maven 3.1.1, Oracle Java 1.7.0_45, FRITZ!OS 06.01
+* Ubuntu 12.04, Maven 3.0.4, Oracle Java 1.7.0_51, FRITZ!OS 4.91 and 6.01
 
 # SOFTWARE REQUIREMENTS
 
 You need at least
  * git 1.7
- * Oracle Java 1.7
+ * Oracle Java 7
  * Maven 3.0.4
 
 
