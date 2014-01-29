@@ -12,11 +12,11 @@ import javax.xml.bind.annotation.XmlType;
  * Child element for the XML document.
  * 
  * @author Marcel Berkholz
- *
+ * 
  */
 
-//None of the fields or properties is bound to XML unless they are specifically
-//annotated with some of the JAXB annotations.
+// None of the fields or properties is bound to XML unless they are specifically
+// annotated with some of the JAXB annotations.
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "contact")
 public class Contact {
@@ -49,8 +49,17 @@ public class Contact {
 		this.setup = new Setup();
 	}
 
-	
-	
+	/**
+	 * 
+	 */
+	public boolean isEmpty() {
+		if (this.services.getEmail().isEmpty() && this.telephony.equals(setup)) {
+			return true;
+		} else {
+			return false;
+		}
+	}
+
 	/**
 	 * Get the category of the contact.
 	 * 
@@ -59,7 +68,7 @@ public class Contact {
 	public int getCategory() {
 		return category;
 	}
-	
+
 	/**
 	 * Get the person of the contact.
 	 * 
@@ -68,17 +77,17 @@ public class Contact {
 	public Person getPerson() {
 		return person;
 	}
-	
+
 	/**
 	 * Set the person of the contact.
 	 * 
-	 * @param person Person object to set.
+	 * @param person
+	 *            Person object to set.
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
 	}
 
-	
 	/**
 	 * Get the telephony of the contact.
 	 * 
@@ -88,16 +97,15 @@ public class Contact {
 		return telephony;
 	}
 
-	
 	/**
 	 * Set the telephony of the contact.
 	 * 
-	 * @param telephony The telephony of the contact to set.
+	 * @param telephony
+	 *            The telephony of the contact to set.
 	 */
 	public void setTelephony(Telephony telephony) {
 		this.telephony = telephony;
 	}
-
 
 	/**
 	 * Get the services of the contact.
@@ -108,32 +116,25 @@ public class Contact {
 		return services;
 	}
 
-	
 	/**
 	 * Set the services of the contact.
 	 * 
-	 * @param services 
+	 * @param services
 	 */
 	public void setServices(Services services) {
 		this.services = services;
 	}
-	
+
 	/**
 	 * Set the email address of the contact.
 	 * 
-	 * @param email the email address of the contact.
+	 * @param email
+	 *            the email address of the contact.
 	 */
 	public void setServices(String email) {
-		this.services = new Services();
-		try {
-			this.services.setEmail(new EMail(email));	
-		} catch (Exception e) {
-			System.out.println("No valid email address given:" + e.getLocalizedMessage());
-		}
-		
+		this.services = new Services(email);
 	}
 
-	
 	/**
 	 * Get the setup of the contact.
 	 * 
@@ -143,16 +144,15 @@ public class Contact {
 		return setup;
 	}
 
-
 	/**
 	 * Get the modification time of the contact as timestamp.
 	 * 
-	 * @return The modification time of the contact. 
+	 * @return The modification time of the contact.
 	 */
 	public long getMod_time() {
 		return this.mod_time;
 	}
-	
+
 	/**
 	 * Set the modification date to the actual timestamp.
 	 * 
@@ -162,17 +162,16 @@ public class Contact {
 		this.mod_time = calendar.getTimeInMillis() / 1000;
 	}
 
-	
 	/**
 	 * Set the modification date to the given timestamp.
 	 * 
-	 * @param mod_time Modification time as timestamp.
+	 * @param mod_time
+	 *            Modification time as timestamp.
 	 */
 	public void setMod_time(long mod_time) {
 		this.mod_time = mod_time;
 	}
-	
-	
+
 	/**
 	 * Get the unique ID of the contact.
 	 * 
@@ -182,11 +181,11 @@ public class Contact {
 		return uid;
 	}
 
-	
 	/**
 	 * Set the unique id of the contact.
 	 * 
-	 * @param uid Unique ID of the contact.
+	 * @param uid
+	 *            Unique ID of the contact.
 	 */
 	public void setUid(int uid) {
 		this.uid = uid;
