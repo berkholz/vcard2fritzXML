@@ -145,8 +145,7 @@ public class Main {
 				// get all vcard entries from file
 				vcard = Ezvcard.parse(file).all();
 			} catch (Exception e) {
-				System.out.println("Error while opening file: " + cmdOptions.vcardFile + " StackTrace:\n"
-						+ e.getStackTrace());
+				System.out.println("Error while opening file: " + cmdOptions.vcardFile + " StackTrace:\n" + e.getStackTrace());
 			}
 		} else {
 			try {
@@ -182,8 +181,8 @@ public class Main {
 
 			// TODO: nach mehreren Begriffen suchen, wie cell, mobile etc.
 			Telephony tp = new Telephony(Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"),
-					Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"),
-					Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "cell"));
+					Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"), Main.getTelephoneNumberByType(
+							vcardElement.getTelephoneNumbers(), "cell"));
 
 			c1.setTelephony(tp);
 
@@ -194,7 +193,10 @@ public class Main {
 				continue;
 			}
 
-			c1.setPerson(new Person(vcardElement.getFormattedName().getValue()));
+			Person p = new Person();
+			p.setRealName(vcardElement.getStructuredName().getGiven(), vcardElement.getStructuredName().getFamily(),
+					cmdOptions.reversedOrder);
+			c1.setPerson(p);
 
 			c1.setMod_time();
 			c1.setUid(uidCounter++);

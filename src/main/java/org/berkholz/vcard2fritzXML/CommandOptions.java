@@ -23,6 +23,7 @@ public class CommandOptions {
 	String phonebookName = "Privat"; // Default phonebook name is "Privat"
 	String[] args;
 	boolean skipEmptyContacts = false;
+	boolean reversedOrder = false;
 
 	/**
 	 * 
@@ -50,6 +51,8 @@ public class CommandOptions {
 		this.options.addOption("f", "file", true, "Read all contacts from Vcard file or from stdin.");
 		this.options.addOption("o", "outfile", true, "Save XML output to file.");
 		this.options.addOption("n", "phonebookname", true, "Rename phonebook to given name.");
+		this.options.addOption("r", "reversed-name-order", false,
+				"Reverse the default order of the fullname. Default order: <surname> <name>.");
 		this.options.addOption("s", "skip-empty-contacts", false, "Skip contacts with no mail address and no telephone numbers.");
 		this.options.addOption("v", "verbose", false, "Be verbose. [NOT YET IMPLEMENTED.]");
 
@@ -98,10 +101,13 @@ public class CommandOptions {
 		if (cmd.hasOption("n")) {
 			phonebookName = cmd.getOptionValue("n");
 		}
-		
-		if (cmd.hasOption("s")){
+
+		if (cmd.hasOption("s")) {
 			skipEmptyContacts = true;
 		}
 
+		if (cmd.hasOption("r")) {
+			reversedOrder = true;
+		}
 	}
 }
