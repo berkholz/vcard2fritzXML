@@ -5,7 +5,8 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
 /**
- * Child element of the contact element in the XML document. Contains the numbers.
+ * Child element of the contact element in the XML document. Contains the
+ * numbers.
  * 
  * @author Marcel Berkholz
  */
@@ -20,7 +21,8 @@ public class Telephony {
 	private ArrayList<Number> numbers;
 
 	/**
-	 * Constructor creates a telephony with initial three numbers: home, work and mobile.
+	 * Constructor creates a telephony with initial three numbers: home, work
+	 * and mobile.
 	 * 
 	 * @param numberHome
 	 *            String representation of the home number.
@@ -65,8 +67,9 @@ public class Telephony {
 	}
 
 	/**
-	 * Set the type of the specified number. Sets the number only when the type exists once. If two number are from the
-	 * same type nothing would be changed.
+	 * Set the type of the specified number. Sets the number only when the type
+	 * exists once. If two number are from the same type nothing would be
+	 * changed.
 	 * 
 	 * @param number
 	 *            telephone number as String.
@@ -78,7 +81,8 @@ public class Telephony {
 		// existent. Fritz!Box allows two or more same types, but we check it.
 		if (this.isNumberTypeAtomar(numberType)) {
 			for (Number currentNumber : this.numbers) {
-				// TODO: when adding of number fails, also true would be returned.
+				// TODO: when adding of number fails, also true would be
+				// returned.
 				if (currentNumber.getType() == numberType) {
 					currentNumber.setNumber(number);
 					return true;
@@ -89,8 +93,9 @@ public class Telephony {
 	}
 
 	/**
-	 * Adds a number to the Telephony, so more than three numbers can be specified. Adds the number only when the type
-	 * exists once. If two number are from the same type nothing would be changed.
+	 * Adds a number to the Telephony, so more than three numbers can be
+	 * specified. Adds the number only when the type exists once. If two number
+	 * are from the same type nothing would be changed.
 	 * 
 	 * @return True if number was added.
 	 */
@@ -108,7 +113,8 @@ public class Telephony {
 	 * 
 	 * @param numberType
 	 *            Type of the number.
-	 * @return Returns true if type of number exists once, otherwise returns false.
+	 * @return Returns true if type of number exists once, otherwise returns
+	 *         false.
 	 */
 	public boolean isNumberTypeAtomar(NumberType numberType) {
 		int occurences = 0;
@@ -121,5 +127,25 @@ public class Telephony {
 			return true;
 		else
 			return false;
+	}
+
+	/**
+	 * Checks if all telephone numbers are not set or empty.
+	 * 
+	 * @return Returns true when all telephone numbers are not set or empty.
+	 */
+	public boolean isEmpty() {
+		// iterate over all numbers
+		for (int i = 0; i < numbers.size(); i++) {
+			// to avoid NullPointerExceptions we check if number objects are present
+			if (numbers.get(i).getNumber() != null) {
+				// one element need to be not empty
+				if (!numbers.get(i).getNumber().isEmpty()) {
+					return false;
+				}
+			}
+		}
+		// no numbers found
+		return true;
 	}
 }
