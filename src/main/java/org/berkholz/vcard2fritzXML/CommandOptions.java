@@ -22,6 +22,7 @@ public class CommandOptions {
 	String vcardFile = "";
 	String phonebookName = "Privat"; // Default phonebook name is "Privat"
 	String[] args;
+	boolean skipEmptyContacts = false;
 
 	/**
 	 * 
@@ -43,12 +44,14 @@ public class CommandOptions {
 	 */
 	public void setOptions() throws ParseException {
 		// options definitions
-		this.options.addOption("h", "help", false, "display help");
-		this.options.addOption("d", "directory", true, "directory with vcards");
-		this.options.addOption("f", "file", true, "file with all vcards");
-		this.options.addOption("o", "outfile", true, "output file");
-		this.options.addOption("n", "phonebookname", true, "name of phonebook");
-		this.options.addOption("v", "verbose", false, "verbose");
+		this.options.addOption("h", "help", false, "Show help.");
+		this.options.addOption("d", "directory", true,
+				"Directory to search for vcards. Every contact is given in a single vcard file. [NOT YET IMPLEMENTED.]");
+		this.options.addOption("f", "file", true, "Read all contacts from Vcard file or from stdin.");
+		this.options.addOption("o", "outfile", true, "Save XML output to file.");
+		this.options.addOption("n", "phonebookname", true, "Rename phonebook to given name.");
+		this.options.addOption("s", "skip-empty-contacts", false, "Skip contacts with no mail address and no telephone numbers.");
+		this.options.addOption("v", "verbose", false, "Be verbose. [NOT YET IMPLEMENTED.]");
 
 		// instantiate parser with our options
 		CommandLineParser parser = new GnuParser();
@@ -61,7 +64,7 @@ public class CommandOptions {
 	 */
 	public void checkOptions() {
 		if (cmd.hasOption("h")) {
-			Main.printHelp();
+			Main.printHelp(this.options);
 			System.exit(0);
 		}
 
@@ -71,18 +74,16 @@ public class CommandOptions {
 
 		// check if both options (-f and -d) are given or not.
 		if (!cmd.hasOption("d") & !cmd.hasOption("f")) {
-			System.out
-					.println("You have to specify either the -d or -f option.");
+			System.out.println("You have to specify either the -d or -f option.\n");
+			Main.printHelp(options);
 			System.exit(1);
 		} else if (cmd.hasOption("d") & cmd.hasOption("f")) {
-			System.out
-					.println("You have to specify only one of the -d or -f options, not both.");
+			System.out.println("You have to specify only one of the -d or -f options, not both.");
 			System.exit(1);
 		}
 
 		if (cmd.hasOption("d")) {
-			System.out
-					.println("The import of a directory within vcards is not yet implemented");
+			System.out.println("The import of a directory within vcards is not yet implemented");
 			System.exit(1);
 			// TODO: Implement the import of vcards from a directory
 			// vcardDirectory = cmd.getOptionValue("d");
@@ -96,6 +97,10 @@ public class CommandOptions {
 
 		if (cmd.hasOption("n")) {
 			phonebookName = cmd.getOptionValue("n");
+		}
+		
+		if (cmd.hasOption("s")){
+			skipEmptyContacts = true;
 		}
 
 	}
