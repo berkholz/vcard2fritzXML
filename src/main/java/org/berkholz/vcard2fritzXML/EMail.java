@@ -19,8 +19,8 @@ import org.apache.commons.validator.routines.EmailValidator;
  */
 
 /*
- * None of the fields or properties is bound to XML unless they are specifically annotated with some of the JAXB
- * annotations.
+ * None of the fields or properties is bound to XML unless they are specifically
+ * annotated with some of the JAXB annotations.
  */
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "email")
@@ -51,19 +51,30 @@ public class EMail {
 	 *            Mail address to instantiate with.
 	 * @throws AddressException
 	 */
-	public EMail(String email) throws Exception {
+	public EMail(String email) {
 		this.email = new String();
 
 		// validate the mail address before creating an object
 		if (EMail.validateEmail(email)) {
 			this.setEmail(email);
-		} else {
-			throw new Exception();
 		}
 
 		this.classifier = "private";
 		// there is only one mail address possible
 		this.id = 0;
+	}
+
+	/**
+	 * Checks if a mail address is set.
+	 * 
+	 * @return Returns true if no mail address is given otherwise false.
+	 */
+	public boolean isEmpty() {
+		if (this.email.isEmpty()) {
+			return true;
+		} else {
+			return false;
+		}
 	}
 
 	/**
