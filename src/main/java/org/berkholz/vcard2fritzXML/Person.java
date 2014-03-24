@@ -19,7 +19,7 @@ public class Person {
 	 *            Real name of the Person.
 	 */
 	public Person(String realName) {
-		this.realName = new String(realName);
+		this.realName = realName;
 	}
 
 	/**
@@ -38,8 +38,7 @@ public class Person {
 	 *            Real name of the person.
 	 */
 	public void setRealName(String realName) {
-		// TODO: validate the real name
-		this.realName = realName;
+		this.realName = checkNameNull(realName);
 	}
 
 	/**
@@ -56,13 +55,16 @@ public class Person {
 	 *            True, if the names should be stored in reverse order.
 	 */
 	public void setRealName(String givenName, String familyName, boolean reversedNameOrder) {
-		String tmpname = new String();
 		if (reversedNameOrder) {
-			tmpname = Person.checkNameNull(familyName) + " " + Person.checkNameNull(givenName);
+            givenName = checkNameNull(givenName);
+            if(!givenName.isEmpty()) {
+                realName = (checkNameNull(familyName) + ", " + givenName).trim();
+            } else {
+                realName = checkNameNull(familyName).trim();
+            }
 		} else {
-			tmpname = Person.checkNameNull(givenName) + " " + Person.checkNameNull(familyName);
+			realName = (checkNameNull(givenName) + " " + checkNameNull(familyName)).trim();
 		}
-		this.realName = tmpname.trim();
 	}
 
 	/**
@@ -76,8 +78,7 @@ public class Person {
 	private static String checkNameNull(String name) {
 		if (name == null) {
 			return "";
-		} else {
-			return name.trim();
-		}
+        }
+		return name.trim();
 	}
 }

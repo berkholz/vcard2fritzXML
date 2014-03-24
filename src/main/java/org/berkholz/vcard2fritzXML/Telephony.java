@@ -18,7 +18,7 @@ public class Telephony {
 
 	// List of numbers
 	@XmlElement(name = "number")
-	private ArrayList<Number> numbers;
+	private final ArrayList<Number> numbers;
 
 	/**
 	 * Constructor creates a telephony with initial three numbers: home, work
@@ -33,34 +33,41 @@ public class Telephony {
 	 */
 	public Telephony(String numberHome, String numberWork, String numberMobile) {
 		// create list of Numbers
-		this.numbers = new ArrayList<Number>();
+		this.numbers = new ArrayList<>();
 
-		// TODO: refactor the creation of this 3 numbers, same code...
-		// create Number with Home-Number
+		// create home number
 		Number homeNumber = new Number(numberHome);
-		homeNumber.setId(0); // set id of Home-Number
-		homeNumber.setPrio(1); // set priority of Home-Number
+		homeNumber.setId(0); // set id of home number
+		homeNumber.setPrio(1); // set priority of home nNumber
 		homeNumber.setType(NumberType.home);
-		this.numbers.add(homeNumber); // add Number to list
+		this.numbers.add(homeNumber); // add number to list
 
+        // create work number
 		Number workNumber = new Number(numberWork);
-		workNumber.setId(1); // set id of Home-Number
-		workNumber.setPrio(3); // set priority of Home-Number
+		workNumber.setId(1); // set id of work number
+        workNumber.setPrio(3); // set priority of work number
 		workNumber.setType(NumberType.work);
-		this.numbers.add(workNumber); // add Number to list
+		this.numbers.add(workNumber); // add number to list
 
+        // create mobile number
 		Number mobileNumber = new Number(numberMobile);
-		mobileNumber.setId(2); // set id of Home-Number
-		mobileNumber.setPrio(2); // set priority of Home-Number
+		mobileNumber.setId(2); // set id of mobile number
+		mobileNumber.setPrio(2); // set priority of mobile number
 		mobileNumber.setType(NumberType.mobile);
-		this.numbers.add(mobileNumber); // add Number to list
-
+		this.numbers.add(mobileNumber); // add number to list
+        
+        // change number prio if numberHome is empty
+        if(numberHome.isEmpty()) {
+            mobileNumber.setPrio(1);
+            workNumber.setPrio(2);
+            homeNumber.setPrio(3);
+        }
 	}
 
 	/**
-	 * Get all telephone numbers as ArrayList<Number>.
+	 * Get all telephone numbers as ArrayList.
 	 * 
-	 * @return numbers List of telephone numbers as ArryList<Number>.
+	 * @return numbers List of telephone numbers as ArryList.
 	 */
 	public ArrayList<Number> getNumbers() {
 		return this.numbers;
@@ -75,6 +82,7 @@ public class Telephony {
 	 *            telephone number as String.
 	 * @param numberType
 	 *            Type of the number.
+     * @return 
 	 */
 	public Boolean setNumber(String number, NumberType numberType) {
 		// set home number, when only one number of specified number type is
@@ -97,6 +105,8 @@ public class Telephony {
 	 * specified. Adds the number only when the type exists once. If two number
 	 * are from the same type nothing would be changed.
 	 * 
+     * @param number
+     * @param numberType
 	 * @return True if number was added.
 	 */
 	public Boolean addNumber(String number, NumberType numberType) {
@@ -123,10 +133,7 @@ public class Telephony {
 				occurences++;
 			}
 
-		if (occurences <= 1)
-			return true;
-		else
-			return false;
+        return occurences <= 1;
 	}
 
 	/**

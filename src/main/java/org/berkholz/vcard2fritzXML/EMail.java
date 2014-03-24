@@ -8,7 +8,6 @@ import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
-
 import org.apache.commons.validator.routines.EmailValidator;
 
 /**
@@ -26,10 +25,10 @@ import org.apache.commons.validator.routines.EmailValidator;
 @XmlType(name = "email")
 public class EMail {
 	@XmlAttribute
-	private Integer id;
+	private final Integer id;
 
 	@XmlAttribute
-	private String classifier;
+	private final String classifier;
 
 	@XmlValue
 	private String email;
@@ -47,9 +46,7 @@ public class EMail {
 	/**
 	 * Instantiate an email address with the given email address(constructor).
 	 * 
-	 * @param email
-	 *            Mail address to instantiate with.
-	 * @throws AddressException
+	 * @param email    Mail address to instantiate with.
 	 */
 	public EMail(String email) {
 		this.email = new String();
@@ -70,11 +67,7 @@ public class EMail {
 	 * @return Returns true if no mail address is given otherwise false.
 	 */
 	public boolean isEmpty() {
-		if (this.email.isEmpty()) {
-			return true;
-		} else {
-			return false;
-		}
+        return this.email.isEmpty();
 	}
 
 	/**
@@ -91,7 +84,6 @@ public class EMail {
 	 * 
 	 * @param email
 	 *            mail address as String representation.
-	 * @throws Exception
 	 */
 	public void setEmail(String email) {
 		if (EMail.validateEmail(email))
@@ -103,12 +95,11 @@ public class EMail {
 	/**
 	 * Validate a mail address.
 	 * 
-	 * @param email
-	 *            Mail address as String representation.
+	 * @param email Mail address as String representation.
 	 * @return true if mail address is valid otherwise false
 	 */
 	public static boolean validateEmail(String email) {
-		if (email == "") {
+		if (email.isEmpty()) {
 			// if no mail is in the contact, we accept an empty string
 			return true;
 		} else {

@@ -3,28 +3,22 @@
  */
 package org.berkholz.vcard2fritzXML;
 
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import ezvcard.types.EmailType;
+import ezvcard.types.TelephoneType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.Iterator;
 import java.util.List;
-
-// libraries for XML generation
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
-
-//libraries for command line parsing
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-
-// libraries for vcard operations
-import ezvcard.Ezvcard;
-import ezvcard.VCard;
-import ezvcard.types.EmailType;
-import ezvcard.types.TelephoneType;
 
 /**
  * @author Marcel Berkholz
@@ -34,6 +28,7 @@ public class Main {
 
 	/**
 	 * Just simply print a help.
+     * @param options
 	 */
 	public static void printHelp(Options options) {
 		HelpFormatter formatter = new HelpFormatter();
@@ -90,7 +85,7 @@ public class Main {
 	/**
 	 * Prints out the vcardfile to stdout.
 	 * 
-	 * @param FileInputStream
+	 * @param fis
 	 */
 	public static void printVCardFile(FileInputStream fis) {
 
@@ -102,7 +97,6 @@ public class Main {
 			}
 			fis.close();
 		} catch (IOException e) {
-			e.printStackTrace();
 		}
 		System.out.flush();
 		System.out.println();
@@ -137,14 +131,14 @@ public class Main {
 		Phonebook pb = new Phonebook(cmdOptions.phonebookName, 1);
 		pbs.setPhonebooks(pb);
 
-		if (cmdOptions.vcardFile != "-") {
+		if (!"-".equals(cmdOptions.vcardFile)) {
 			// Read in a vCards
 			try {
 
 				File file = new File(cmdOptions.vcardFile);
 				// get all vcard entries from file
 				vcard = Ezvcard.parse(file).all();
-			} catch (Exception e) {
+			} catch (IOException e) {
 				System.out.println("Error while opening file: " + cmdOptions.vcardFile + " StackTrace:\n" + e.getStackTrace());
 			}
 		} else {

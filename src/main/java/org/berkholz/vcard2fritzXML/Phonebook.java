@@ -5,7 +5,6 @@ package org.berkholz.vcard2fritzXML;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -18,10 +17,10 @@ import javax.xml.bind.annotation.XmlElement;
  */
 public class Phonebook {
 	@XmlAttribute
-	private String name;
+	private final String name;
 
 	@XmlAttribute
-	private Integer owner;
+	private final Integer owner;
 
 	// add child element contact
 	@XmlElement(name = "contact")
@@ -31,7 +30,7 @@ public class Phonebook {
 	 * Instantiate a phonebook(contructor).
 	 */
 	public Phonebook() {
-		this.contacts = new ArrayList<Contact>();
+		this.contacts = new ArrayList<>();
 		this.name = "Privat";
 		this.owner = 1;
 	}
@@ -45,7 +44,7 @@ public class Phonebook {
 	 *            Owner of the phonebook.
 	 */
 	public Phonebook(String phonebookName, int phonebookOwner) {
-		this.contacts = new ArrayList<Contact>();
+		this.contacts = new ArrayList<>();
 		this.name = phonebookName;
 		this.owner = phonebookOwner;
 	}

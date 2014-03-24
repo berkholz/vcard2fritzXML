@@ -27,8 +27,7 @@ public class CommandOptions {
 
 	/**
 	 * 
-	 * @param String
-	 *            [] args - Command line arguments.
+     * @param args Command Line Parameters
 	 * @throws ParseException
 	 * 
 	 */

@@ -1,7 +1,6 @@
 package org.berkholz.vcard2fritzXML;
 
 import java.util.Calendar;
-
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
 import javax.xml.bind.annotation.XmlElement;
@@ -21,7 +20,7 @@ import javax.xml.bind.annotation.XmlType;
 @XmlType(name = "contact")
 public class Contact {
 	@XmlElement(name = "category")
-	private int category;
+	private final int category;
 
 	@XmlElement(name = "person")
 	private Person person;
@@ -33,7 +32,7 @@ public class Contact {
 	private Services services;
 
 	@XmlElement(name = "setup")
-	private Setup setup;
+	private final Setup setup;
 
 	@XmlElement(name = "mod_time")
 	private long mod_time;
@@ -56,11 +55,7 @@ public class Contact {
 	 *         contact are not set or null. Otherwise false.
 	 */
 	public boolean isEmpty() {
-		if (this.services.getEmail().isEmpty() && this.telephony.isEmpty()) {
-			return true;
-		} else {
-			return false;
-		}
+        return this.services.getEmail().isEmpty() && this.telephony.isEmpty();
 	}
 
 	/**
