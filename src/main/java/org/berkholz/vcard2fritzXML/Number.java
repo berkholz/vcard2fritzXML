@@ -47,6 +47,7 @@ public class Number {
 	 * Instantiate a number (constructor).
 	 * 
 	 * @param number Number as String representation.
+     * @param numberType
 	 */
 	public Number(String number, NumberType numberType) {
 		this.number = Number.validateNumber(number);
@@ -79,6 +80,7 @@ public class Number {
 	 * Checks if the string is a valid telephone number, that can contain
 	 * "[0-9.\\/ -]+".
 	 * 
+     * @param number2validate
 	 * @return String Returns the number when it is valid otherwise null.
 	 */
 	public static String validateNumber(String number2validate) {
@@ -95,11 +97,7 @@ public class Number {
 	 * @return Returns true if number is valid otherwise false.
 	 */
 	public boolean isValidNumber() {
-		if (this.number.matches("[0-9.\\/ -]+")) {
-			return true;
-		} else {
-			return false;
-		}
+        return this.number.matches("[0-9.\\/ -]+");
 	}
 
 	/**
@@ -158,5 +156,4 @@ public class Number {
 	public void setType(NumberType type) {
 		this.type = type;
 	}
-
 }
