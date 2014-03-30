@@ -46,7 +46,7 @@ public class EMail {
 	/**
 	 * Instantiate an email address with the given email address(constructor).
 	 * 
-	 * @param email    Mail address to instantiate with.
+	 * @param email Mail address to instantiate with.
 	 */
 	public EMail(String email) {
 		this.email = new String();
@@ -82,8 +82,7 @@ public class EMail {
 	/**
 	 * Set the mail address.
 	 * 
-	 * @param email
-	 *            mail address as String representation.
+	 * @param email Mail address as String representation.
 	 */
 	public void setEmail(String email) {
 		if (EMail.validateEmail(email))
@@ -96,7 +95,7 @@ public class EMail {
 	 * Validate a mail address.
 	 * 
 	 * @param email Mail address as String representation.
-	 * @return true if mail address is valid otherwise false
+	 * @return True if mail address is valid, otherwise false.
 	 */
 	public static boolean validateEmail(String email) {
 		if (email.isEmpty()) {
