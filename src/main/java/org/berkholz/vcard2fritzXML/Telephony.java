@@ -24,21 +24,22 @@ public class Telephony {
 	 * Constructor creates a telephony with initial three numbers: home, work
 	 * and mobile.
 	 * 
-	 * @param numberHome
-	 *            String representation of the home number.
-	 * @param numberWork
-	 *            String representation of the work number.
-	 * @param numberMobile
-	 *            String representation of the mobile number.
+	 * @param numberHome String representation of the home number.
+	 * @param numberWork String representation of the work number.
+	 * @param numberMobile String representation of the mobile number.
 	 */
 	public Telephony(String numberHome, String numberWork, String numberMobile) {
 		// create list of Numbers
 		this.numbers = new ArrayList<>();
 
+		/* TODO: refactor the creation of this 3 numbers, same code...
+		 * May be a new constructor would be the choice.
+		 */
+		
 		// create home number
 		Number homeNumber = new Number(numberHome);
 		homeNumber.setId(0); // set id of home number
-		homeNumber.setPrio(1); // set priority of home nNumber
+		homeNumber.setPrio(1); // set priority of home number
 		homeNumber.setType(NumberType.home);
 		this.numbers.add(homeNumber); // add number to list
 
@@ -58,6 +59,7 @@ public class Telephony {
         
         // change number prio if numberHome is empty
         if(numberHome.isEmpty()) {
+        	// TODO: Maybe the order should be defined by command line.
             mobileNumber.setPrio(1);
             workNumber.setPrio(2);
             homeNumber.setPrio(3);
@@ -67,7 +69,7 @@ public class Telephony {
 	/**
 	 * Get all telephone numbers as ArrayList.
 	 * 
-	 * @return numbers List of telephone numbers as ArryList.
+	 * @return List of telephone numbers as ArryList.
 	 */
 	public ArrayList<Number> getNumbers() {
 		return this.numbers;
@@ -78,15 +80,13 @@ public class Telephony {
 	 * exists once. If two number are from the same type nothing would be
 	 * changed.
 	 * 
-	 * @param number
-	 *            telephone number as String.
-	 * @param numberType
-	 *            Type of the number.
-     * @return 
+	 * @param number telephone number as String.
+	 * @param numberType Type of the number.
+     * @return True, if number could be set, otherwise false.
 	 */
 	public Boolean setNumber(String number, NumberType numberType) {
 		// set home number, when only one number of specified number type is
-		// existent. Fritz!Box allows two or more same types, but we check it.
+		// existent. FRITZ!Box allows two or more same types, but we check it.
 		if (this.isNumberTypeAtomar(numberType)) {
 			for (Number currentNumber : this.numbers) {
 				// TODO: when adding of number fails, also true would be
@@ -121,10 +121,8 @@ public class Telephony {
 	/**
 	 * Checks if the type of the number exists only once.
 	 * 
-	 * @param numberType
-	 *            Type of the number.
-	 * @return Returns true if type of number exists once, otherwise returns
-	 *         false.
+	 * @param numberType Type of the number.
+	 * @return Returns true if type of number exists once, otherwise returns false.
 	 */
 	public boolean isNumberTypeAtomar(NumberType numberType) {
 		int occurences = 0;

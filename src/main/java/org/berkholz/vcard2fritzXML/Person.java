@@ -15,8 +15,7 @@ public class Person {
 	/**
 	 * Instantiate a person with String as real name.
 	 * 
-	 * @param realName
-	 *            Real name of the Person.
+	 * @param realName Real name of the Person.
 	 */
 	public Person(String realName) {
 		this.realName = realName;
@@ -34,8 +33,7 @@ public class Person {
 	/**
 	 * Set the real name.
 	 * 
-	 * @param realName
-	 *            Real name of the person.
+	 * @param realName Real name of the person.
 	 */
 	public void setRealName(String realName) {
 		this.realName = checkNameNull(realName);
@@ -47,12 +45,9 @@ public class Person {
 	 * "name givenname". Names will be trimmed (spaces are deleted at beginning
 	 * and end).
 	 * 
-	 * @param givenName
-	 *            The given name of the person.
-	 * @param familyName
-	 *            The family name of the person.
-	 * @param reversedNameOrder
-	 *            True, if the names should be stored in reverse order.
+	 * @param givenName The given name of the person.
+	 * @param familyName The family name of the person.
+	 * @param reversedNameOrder True, if the names should be stored in reverse order.
 	 */
 	public void setRealName(String givenName, String familyName, boolean reversedNameOrder) {
 		if (reversedNameOrder) {
@@ -70,8 +65,7 @@ public class Person {
 	/**
 	 * Helperfunction for checking a name for null value and setting it.
 	 * 
-	 * @param name
-	 *            The name to check if it is null or not.
+	 * @param name The name to check if it is null or not.
 	 * @return Returns the trimmed name if a value is present or an empty string
 	 *         if name is null.
 	 */

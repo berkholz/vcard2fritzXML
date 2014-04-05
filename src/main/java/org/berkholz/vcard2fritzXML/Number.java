@@ -47,7 +47,7 @@ public class Number {
 	 * Instantiate a number (constructor).
 	 * 
 	 * @param number Number as String representation.
-     * @param numberType
+     * @param numberType Type of number, like mobile, home, work, fax_work etc.
 	 */
 	public Number(String number, NumberType numberType) {
 		this.number = Number.validateNumber(number);
@@ -72,7 +72,7 @@ public class Number {
 	 * @param number Number as String to set.
 	 */
 	public void setNumber(String number) {
-		// TODO: What happens when number is not valid. Should throw exception.
+		// TODO: What happens when number is not valid. Should throw exception?
 		this.number = validateNumber(number);
 	}
 
@@ -80,7 +80,7 @@ public class Number {
 	 * Checks if the string is a valid telephone number, that can contain
 	 * "[0-9.\\/ -]+".
 	 * 
-     * @param number2validate
+     * @param number2validate Number as String, which should be validated.
 	 * @return String Returns the number when it is valid otherwise null.
 	 */
 	public static String validateNumber(String number2validate) {
@@ -131,8 +131,7 @@ public class Number {
 	/**
 	 * Sets the priority of the number.
 	 * 
-	 * @param prio
-	 *            Priority of the number.
+	 * @param prio Priority of the number.
 	 */
 	public void setPrio(int prio) {
 		this.prio = prio;
@@ -150,8 +149,7 @@ public class Number {
 	/**
 	 * Set the type of the number.
 	 * 
-	 * @param type
-	 *            The type of the number to set.
+	 * @param type The type of the number to set.
 	 */
 	public void setType(NumberType type) {
 		this.type = type;

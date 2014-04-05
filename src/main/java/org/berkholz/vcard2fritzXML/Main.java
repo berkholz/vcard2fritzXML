@@ -3,10 +3,6 @@
  */
 package org.berkholz.vcard2fritzXML;
 
-import ezvcard.Ezvcard;
-import ezvcard.VCard;
-import ezvcard.types.EmailType;
-import ezvcard.types.TelephoneType;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -19,6 +15,10 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import ezvcard.types.EmailType;
+import ezvcard.types.TelephoneType;
 
 /**
  * @author Marcel Berkholz
@@ -85,7 +85,7 @@ public class Main {
 	/**
 	 * Prints out the vcardfile to stdout.
 	 * 
-	 * @param fis
+	 * @param fis VCard file as FileInputStream.
 	 */
 	public static void printVCardFile(FileInputStream fis) {
 
@@ -97,6 +97,7 @@ public class Main {
 			}
 			fis.close();
 		} catch (IOException e) {
+			System.out.println("Error while printing the vcard file:\nStackTrace:\n" + e.getStackTrace());
 		}
 		System.out.flush();
 		System.out.println();
@@ -131,7 +132,8 @@ public class Main {
 		Phonebook pb = new Phonebook(cmdOptions.phonebookName, 1);
 		pbs.setPhonebooks(pb);
 
-		if (!"-".equals(cmdOptions.vcardFile)) {
+		// check if vcard input is given via stdin
+		if (! "-".equals(cmdOptions.vcardFile)) {
 			// Read in a vCards
 			try {
 

@@ -38,10 +38,8 @@ public class Phonebook {
 	/**
 	 * Instantiate a phonebook with phonebook name and owner.
 	 * 
-	 * @param phonebookName
-	 *            Name of the phonebook.
-	 * @param phonebookOwner
-	 *            Owner of the phonebook.
+	 * @param phonebookName Name of the phonebook.
+	 * @param phonebookOwner Owner of the phonebook.
 	 */
 	public Phonebook(String phonebookName, int phonebookOwner) {
 		this.contacts = new ArrayList<>();
@@ -77,7 +75,7 @@ public class Phonebook {
 	 */
 	public void addContact(Contact contact) {
 		if (!contacts.add(contact)) {
-			// TODO: Exception eventuell einfügen
+			// TODO: Add Exception here?
 			System.out.print("Error while inserting a contact.");
 		}
 	}

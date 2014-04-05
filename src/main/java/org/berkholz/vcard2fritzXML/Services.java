@@ -38,8 +38,7 @@ public class Services {
 	/**
 	 * Instantiate the services with mail address.
 	 * 
-	 * @param email
-	 *            Mail address for the services.
+	 * @param email Mail address for the services.
 	 */
 	public Services(String email) {
 		try {
@@ -68,16 +67,16 @@ public class Services {
 	}
 
 	/**
-	 * Set the mail address. Be carefull, the mail address is actually not validated. It should be in a valid form.
+	 * Set the mail address. Mail address will be validated and throws an Exception if invalid.
 	 * 
-	 * @param email
-	 *            Set the mail address to the given mail address.
+	 * @param email Set the mail address to the given mail address.
 	 * @throws Exception 
 	 */
 	public void setEmail(EMail email) throws Exception {
 		if (EMail.validateEmail(email.getEmail())) {
 			this.email = email;
 		} else {
+			// TODO: Remove exception and do some better staff, like logger or dummy mail for not failing the complete import.  
 			throw new Exception("No valid mail address given. Could not assign the mail address " + email.getEmail()
 					+ " as child element to the XML element Services.");
 		}
