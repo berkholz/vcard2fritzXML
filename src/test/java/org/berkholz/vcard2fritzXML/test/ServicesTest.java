@@ -16,49 +16,43 @@
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
 
-package org.berkholz.vcard2fritzXML;
+package org.berkholz.vcard2fritzXML.test;
 
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlRootElement;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Before;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import static org.junit.Assert.*;
 
 /**
- * 
- * Root element for the XML document.
- * 
- * @author Marcel Berkholz
  *
+ * @author grey
  */
+public class ServicesTest {
+    
+    public ServicesTest() {
+    }
+    
+    @BeforeClass
+    public static void setUpClass() {
+    }
+    
+    @AfterClass
+    public static void tearDownClass() {
+    }
+    
+    @Before
+    public void setUp() {
+    }
+    
+    @After
+    public void tearDown() {
+    }
 
-@XmlRootElement()
-public class Phonebooks {
-
-	@XmlElement(name = "phonebook")
-	private Phonebook phonebook;
-
-	/** 
-	 * Instantiate the phonebooks.
-	 */
-	public Phonebooks(){
-		super();
-	}
-	
-	
-	/**
-	 * Get the phonebook.
-	 * 
-	 * @return The phonebook.
-	 */
-	public Phonebook getPhonebook() {
-		return phonebook;
-	}
-
-	/**
-	 * Set the phonebook.
-	 * 
-	 * @param phonebook Phonebook to set.
-	 */
-	public void setPhonebooks(Phonebook phonebook) {
-		this.phonebook = phonebook;
-	}
-
+    // TODO add test methods here.
+    // The methods must be annotated with annotation @Test. For example:
+    //
+    // @Test
+    // public void hello() {}
 }
