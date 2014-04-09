@@ -17,10 +17,11 @@ vcard2fritzXML is tested on the following environments:
 # SOFTWARE REQUIREMENTS
 
 You need at least
- * git 1.7
- * Oracle Java 7
- * Maven 3.0.4
-
+ * git 1.7 or higher (http://git-scm.com/)
+ * Oracle Java 7 or higher (http://www.oracle.com/technetwork/java/index.html)
+ * Maven 3.0.4 or higher (http://maven.apache.org/)
+   * ez-vcard  0.8.5 or higher (https://code.google.com/p/ez-vcard/)
+   * commons-cli 1.2  or higher (http://commons.apache.org/proper/commons-cli/)
 
 # DOWNLOAD
 
@@ -79,3 +80,11 @@ Use the specific Maven goal to generate IDE projects file, e.g. for Eclipse
 
     mvn eclipse:eclipse
 
+Netbeans should open it nativly as a project.
+
+
+# CONTRIBUTORS
+
+Special thanks to the following persons, who helped making this software better:
+* Danny Gräf
+* Ludger Kluitmann
