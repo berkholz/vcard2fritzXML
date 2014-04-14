@@ -97,8 +97,7 @@ public class Contact {
 	/**
 	 * Set the person of the contact.
 	 * 
-	 * @param person
-	 *            Person object to set.
+	 * @param person Person object to set.
 	 */
 	public void setPerson(Person person) {
 		this.person = person;
@@ -116,8 +115,7 @@ public class Contact {
 	/**
 	 * Set the telephony of the contact.
 	 * 
-	 * @param telephony
-	 *            The telephony of the contact to set.
+	 * @param telephony The telephony of the contact to set.
 	 */
 	public void setTelephony(Telephony telephony) {
 		this.telephony = telephony;
@@ -135,7 +133,7 @@ public class Contact {
 	/**
 	 * Set the services of the contact.
 	 * 
-	 * @param services
+	 * @param services Set the services of a contact.
 	 */
 	public void setServices(Services services) {
 		this.services = services;
@@ -144,8 +142,7 @@ public class Contact {
 	/**
 	 * Set the email address of the contact.
 	 * 
-	 * @param email
-	 *            the email address of the contact.
+	 * @param email The email address of the contact.
 	 */
 	public void setServices(String email) {
 		this.services = new Services(email);
@@ -181,8 +178,7 @@ public class Contact {
 	/**
 	 * Set the modification date to the given timestamp.
 	 * 
-	 * @param mod_time
-	 *            Modification time as timestamp.
+	 * @param mod_time Modification time as timestamp.
 	 */
 	public void setMod_time(long mod_time) {
 		this.mod_time = mod_time;
@@ -200,8 +196,7 @@ public class Contact {
 	/**
 	 * Set the unique id of the contact.
 	 * 
-	 * @param uid
-	 *            Unique ID of the contact.
+	 * @param uid Unique ID of the contact.
 	 */
 	public void setUid(int uid) {
 		this.uid = uid;
