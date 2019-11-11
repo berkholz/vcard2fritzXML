@@ -15,13 +15,10 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package org.berkholz.vcard2fritzXML.test;
 
-import org.junit.After;
-import org.junit.AfterClass;
+import org.berkholz.vcard2fritzXML.Person;
 import org.junit.Before;
-import org.junit.BeforeClass;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
@@ -30,29 +27,50 @@ import static org.junit.Assert.*;
  * @author berkholz
  */
 public class PersonTest {
-    
+
+    Person p1Test;
+    Person p2Test;
+
     public PersonTest() {
     }
-    
-    @BeforeClass
-    public static void setUpClass() {
-    }
-    
-    @AfterClass
-    public static void tearDownClass() {
-    }
-    
+
     @Before
     public void setUp() {
-    }
-    
-    @After
-    public void tearDown() {
+        p1Test = new Person();
+        p2Test = new Person("Marcel Berkholz");
     }
 
-    // TODO add test methods here.
-    // The methods must be annotated with annotation @Test. For example:
-    //
-    // @Test
-    // public void hello() {}
+    @Test
+    public void testEmptyCreatedPerson() {
+        assertEquals("realname not equal", "", p1Test.getRealName());
+    }
+
+    @Test
+    public void testEmptyCreatedPerson4Null() {
+        assertNotNull("Check if empty user is created as null, shoiuld not be null.", p1Test);
+    }
+
+    @Test
+    public void testSetPersonsRealname() {
+        p1Test.setRealName("Max Mustermann");
+        assertEquals("realname not equal after setting it", "Max Mustermann", p1Test.getRealName());
+    }
+
+    @Test
+    public void testSetPersonsRealname_reversed() {
+        p1Test.setRealName("Max", "Mustermann", true);
+        assertEquals("realname not equal after setting it, reversed", "Mustermann, Max", p1Test.getRealName());
+    }
+
+    @Test
+    public void testSetPersonsRealname_notreversed() {
+        p1Test.setRealName("Max", "Mustermann", false);
+        assertEquals("realname not equal after setting it, not reversed", "Max Mustermann", p1Test.getRealName());
+    }
+    
+    @Test
+    public void testSetPersonRealnameWithSpecialCharacters(){
+        p1Test.setRealName("*+._öä!2@");
+        assertEquals("Sonderzeichen scheinen nicht zu klappen.", "*+._öä!2@", p1Test.getRealName());
+    }
 }
