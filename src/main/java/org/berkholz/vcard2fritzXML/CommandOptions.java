@@ -98,15 +98,10 @@ public class CommandOptions {
         }
 
         if (cmd.hasOption("d")) {
-            System.out.println("The import of a directory within vcards is not yet implemented");
-            System.exit(1);
-            // TODO: Implement the import of vcards from a directory
-            // vcardDirectory = cmd.getOptionValue("d");
-            // System.out.println("Reading vcard files from directory: " +
-            // vcardDirectory);
-        }
-
-        if (cmd.hasOption("f")) {
+             vcardDirectory = cmd.getOptionValue("d");
+             System.out.println("Reading vcard files from directory: " +
+             vcardDirectory);
+        } else if (cmd.hasOption("f")) {
             vcardFile = cmd.getOptionValue("f");
         }
 
