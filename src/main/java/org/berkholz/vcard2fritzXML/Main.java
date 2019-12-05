@@ -227,8 +227,12 @@ public class Main {
             }
 
             Person p = new Person();
-            p.setRealName(vcardElement.getStructuredName().getGiven(), vcardElement.getStructuredName().getFamily(),
-                    cmdOptions.reversedOrder);
+            if (vcardElement.getStructuredName() != null) {
+                p.setRealName(vcardElement.getStructuredName().getGiven(), vcardElement.getStructuredName().getFamily(),
+                        cmdOptions.reversedOrder);
+            } else if(vcardElement.getFormattedName() != null) {
+                p.setRealName(vcardElement.getFormattedName().getValue());
+            }
             c1.setPerson(p);
 
             c1.setMod_time();
