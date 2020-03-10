@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package org.berkholz.vcard2fritzXML;
 
 import java.io.File;
@@ -30,15 +29,16 @@ import javax.xml.bind.Marshaller;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
+import org.apache.commons.csv.CSVFormat;
+import org.apache.commons.csv.CSVParser;
+import org.apache.commons.csv.CSVRecord;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.types.EmailType;
 import ezvcard.types.TelephoneType;
-import java.nio.file.Files;
-import java.nio.file.LinkOption;
-import java.nio.file.Paths;
+import java.io.FilenameFilter;
 import java.util.ArrayList;
-import java.util.stream.Collectors;
+import java.util.Arrays;
 
 /**
  * @author Marcel Berkholz
@@ -47,7 +47,269 @@ import java.util.stream.Collectors;
 public class Main {
 
     /**
+     * VARIABLES
+     */
+    List<VCard> vcard;
+
+    List<CSVRecord> csv;
+
+    // Options object including file and directory name
+    protected CommandOptions cmdOptions;
+
+    // the phonebooks element
+    Phonebooks pbs;
+
+    // create the phonebook element, will contain all of our contacts, and
+    // assign it to our phonebooks element
+    Phonebook pb;
+
+// ************** CONSTRUCTOR
+    /**
+     * Constructor for Main class.
+     *
+     * @param args
+     * @throws ParseException
+     */
+    public Main(String[] args) throws ParseException {
+
+        // create Options object including file and directory name
+        this.cmdOptions = new CommandOptions(args);
+
+        // define the possible command line options
+        cmdOptions.setOptions();
+
+        // check if all options meet our requirements
+        cmdOptions.checkOptions();
+
+        // create the phonebooks element, contains a phonebook element
+        pbs = new Phonebooks();
+
+        //pb = new Phonebook(Main.cmdOptions.phonebookName, 1);
+        pb = new Phonebook(cmdOptions.phonebookName, 1);
+
+        pbs.setPhonebooks(pb);
+    }
+
+    /*
+    FUNCTIONS
+     */
+    /**
+     * Method for reading in the CSV entries from file, directory or stdin.
+     * TODO: This method should be refactored with readInVCards() -> code
+     * duplication
+     */
+    protected void readInCSVs() {
+        // check if vcard input is given via stdin
+        if (!"-".equals(this.cmdOptions.inFile)) {
+            if (this.cmdOptions.inDirectory.isEmpty()) {
+                // Read in a single csv
+                try {
+                    // get all csv entries from file
+                    InputStreamReader inStreamReader = new InputStreamReader(new FileInputStream(this.cmdOptions.inFile));
+                    CSVParser csvParser = new CSVParser(inStreamReader, CSVFormat.DEFAULT
+                            .withFirstRecordAsHeader()
+                            .withIgnoreHeaderCase()
+                            .withTrim());
+                    this.csv = csvParser.getRecords();
+                } catch (IOException e) {
+                    System.out.println("Error while opening file: " + this.cmdOptions.inFile + " StackTrace:\n" + Arrays.toString(e.getStackTrace()));
+                }
+            } else {
+                // TODO: implement -d option for csv files
+                System.out.println("NOT IMPLEMENTED YET!!");
+                System.exit(1);
+            }
+        } else {
+            // we get our vcard infos over stdin
+            try {
+                InputStreamReader inStreamReader = new InputStreamReader(System.in);
+
+                CSVParser csvParser = new CSVParser(inStreamReader, CSVFormat.DEFAULT
+                        .withFirstRecordAsHeader()
+                        .withIgnoreHeaderCase()
+                        .withTrim());
+
+                // get all vcard entries from stdin
+                this.csv = csvParser.getRecords();
+            } catch (IOException ioe) {
+                System.out.println("Error while opening the InputStreamReader" + ioe.getLocalizedMessage());
+            }
+        }
+    }
+
+    /**
+     * Method for reading in the vcards from file, directory or stdin.
+     *
+     * @throws IOException
+     */
+    protected void readInVCards() throws IOException {
+        // check if vcard input is given via stdin
+        if (!"-".equals(this.cmdOptions.inFile)) {
+            if (this.cmdOptions.inDirectory.isEmpty()) {
+                // Read in a single vCards
+                try {
+
+                    File file = new File(this.cmdOptions.inFile);
+                    // get all vcard entries from file
+                    this.vcard = Ezvcard.parse(file).all();
+                } catch (IOException e) {
+                    System.out.println("Error while opening file: " + this.cmdOptions.inFile + " StackTrace:\n" + Arrays.toString(e.getStackTrace()));
+                }
+            } else {
+                // check directory if it exists
+                File dir = new File(this.cmdOptions.inDirectory);
+                this.vcard = new ArrayList<>();
+                if (dir.exists() && dir.isDirectory()) {
+                    ArrayList<File> files = new ArrayList();
+
+                    for (File f : dir.listFiles(Main.getFileNameFilter("vcf"))) {
+                        if (f.isFile()) {
+//                            files.add(f);
+                            List<VCard> tmpVcard = Ezvcard.parse(f).all();
+                            this.vcard.addAll(tmpVcard);
+                        }
+                    }
+                }
+            }
+        } else {
+            // we get our vcard infos over stdin
+            try {
+                InputStreamReader inStreamReader = new InputStreamReader(System.in);
+                // get all vcard entries from stdin
+                this.vcard = Ezvcard.parse(inStreamReader).all();
+            } catch (IOException ioe) {
+                System.out.println("Error while opening the InputStreamReader" + ioe.getLocalizedMessage());
+            }
+        }
+    }
+
+    /**
+     * Method to generate the contacts from csv entries.
+     */
+    protected void createContactsFromCSVs() {
+        // iterate of any vcard entries
+        Iterator<CSVRecord> csvIterator = csv.iterator();
+
+        // initialize the uid counter for contacts
+        int uidCounter = 1;
+
+        while (csvIterator.hasNext()) {
+            // get next vcard entry
+            CSVRecord csvElement = csvIterator.next();
+
+            // create new contact to represent the actual vcard element
+            Contact c1 = new Contact();
+
+            //CSV-HEADER: givenname, familyname, home, work, mobile, fax_work, email
+            //String fax_work = csvElement.get("fax_work");
+            c1.setServices(csvElement.get("email"));
+
+            Telephony tp = new Telephony(csvElement.get("home"), csvElement.get("work"), csvElement.get("mobile"));
+
+            c1.setTelephony(tp);
+
+            // skip contact with no mail address and telephone numbers if
+            // command line option -s is given
+            if (cmdOptions.skipEmptyContacts && tp.isEmpty() && c1.getServices().getEmail().isEmpty()) {
+                System.out.println("Skipping: " + csvElement.toString());
+                continue;
+            }
+
+            Person p = new Person();
+            p.setRealName(csvElement.get("givenname"), csvElement.get("familyname"), cmdOptions.reversedOrder);
+            c1.setPerson(p);
+
+            c1.setMod_time();
+            c1.setUid(uidCounter++);
+
+            // add contact to out phonebook element
+            pb.addContact(c1);
+        }
+    }
+
+    /**
+     * Method to generate the contacts from vcard entries.
+     */
+    protected void createContactsFromVCards() {
+
+        // iterate of any vcard entries
+        Iterator<VCard> vcardIterator = vcard.iterator();
+
+        // initialize the uid counter for contacts
+        int uidCounter = 1;
+
+        while (vcardIterator.hasNext()) {
+            // get next vcard entry
+            VCard vcardElement = vcardIterator.next();
+
+            // create new contact to represent the actual vcard element
+            Contact c1 = new Contact();
+
+            String tmpmail = "";
+
+            // if field mail is not empty take vcard entry
+            if (!vcardElement.getEmails().isEmpty()) {
+                tmpmail = vcardElement.getEmails().get(0).getValue();
+            }
+            c1.setServices(tmpmail);
+
+            // TODO: nach mehreren Begriffen suchen, wie cell, mobile etc.
+            Telephony tp = new Telephony(Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"),
+                    Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"), Main.getTelephoneNumberByType(
+                    vcardElement.getTelephoneNumbers(), "cell"));
+
+            c1.setTelephony(tp);
+
+            // skip contact with no mail address and telephone numbers if
+            // command line option -s is given
+            if (cmdOptions.skipEmptyContacts && tp.isEmpty() && c1.getServices().getEmail().isEmpty()) {
+                System.out.println("Skipping: " + vcardElement.getFormattedName().getValue());
+                continue;
+            }
+
+            Person p = new Person();
+
+            if (vcardElement.getStructuredName() != null) {
+                p.setRealName(vcardElement.getStructuredName().getGiven(), vcardElement.getStructuredName().getFamily(),
+                        cmdOptions.reversedOrder);
+            } else if (vcardElement.getFormattedName() != null) {
+                p.setRealName(vcardElement.getFormattedName().getValue(), vcardElement.getStructuredName().getFamily(),
+                        cmdOptions.reversedOrder);
+            } else {
+                p.setRealName("");
+            }
+            
+            c1.setPerson(p);
+
+            c1.setMod_time();
+            c1.setUid(uidCounter++);
+
+            // add contact to out phonebook element
+            pb.addContact(c1);
+        }
+    }
+
+    /**
+     * Marshalling the phonebook with all read entries from input source.
+     *
+     * @throws JAXBException
+     */
+    protected void marshall() throws JAXBException {
+        JAXBContext context = JAXBContext.newInstance(Phonebooks.class);
+        Marshaller m = context.createMarshaller();
+        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
+
+        // output should be directed to stdout or file if Option -o is given
+        if (cmdOptions.outputFile.isEmpty()) {
+            m.marshal(pbs, System.out);
+        } else {
+            m.marshal(pbs, new File(cmdOptions.outputFile));
+        }
+    }
+
+    /**
      * Just simply print a help.
+     *
      * @param options
      */
     public static void printHelp(Options options) {
@@ -55,11 +317,20 @@ public class Main {
         formatter.printHelp("vcard2fritzXML", options);
 
         System.out.println("\nExamples: ");
-        System.out.println("\tvcard2fritzXML -f c:\\path\\to\\vcards\\all_vcards.vcard > fritz_phonebook.xml");
-        System.out.println("\tcat test.vcf | vcard2fritzXML -f - > fritz_phonebook.xml ");
-        System.out.println("\tvcard2fritzXML -d c:\\path\\to\\vcards\\ > fritz_phonebook.xml");
-        System.out.println("\tvcard2fritzXML -d c:\\path\\to\\vcards\\ -o fritz_phonebook.xml\n");
+        System.out.println("\tvcard2fritzXML -t vcf -f c:\\path\\to\\vcards\\all_vcards.vcard > fritz_phonebook.xml");
+        System.out.println("\tcat test.vcf | vcard2fritzXML -t vcf -f - > fritz_phonebook.xml ");
+        System.out.println("\tvcard2fritzXML -t vcf -d c:\\path\\to\\vcards\\ > fritz_phonebook.xml");
+        System.out.println("\tvcard2fritzXML -t csv c:\\path\\to\\csv_file\\ -o fritz_phonebook.xml\n");
 
+    }
+
+    private static FilenameFilter getFileNameFilter(String extension) {
+        return new FilenameFilter() {
+            @Override
+            public boolean accept(File dir, String name) {
+                return name.toLowerCase().endsWith(extension);
+            }
+        };
     }
 
     /**
@@ -98,7 +369,6 @@ public class Main {
                 return tel.getText();
             }
         }
-
         return new String();
     }
 
@@ -117,7 +387,7 @@ public class Main {
             }
             fis.close();
         } catch (IOException e) {
-            System.out.println("Error while printing the vcard file:\nStackTrace:\n" + e.getStackTrace());
+            System.out.println("Error while printing the vcard file:\nStackTrace:\n" + Arrays.toString(e.getStackTrace()));
         }
         System.out.flush();
         System.out.println();
@@ -132,122 +402,26 @@ public class Main {
      */
     public static void main(String[] args) throws IOException, JAXBException, ParseException {
 
-        // Variables for command option parsing
-        List<VCard> vcard = null;
+        // initialize our Main class as holder for our phonebooks, see constructor
+        Main main = new Main(args);
 
-        // create Options object including file and directory name
-        CommandOptions cmdOptions = new CommandOptions(args);
+        // check if vcard or csv is given
+        switch (main.cmdOptions.cmd.getOptionValue("t")) {
+            case "csv":
+                // csv is given, read in all entries
+                main.readInCSVs();
+                main.createContactsFromCSVs();
+                break;
+            case "vcf":
+                // vcard is given, read in all entries
+                main.readInVCards();
 
-        // define the possible command line options
-        cmdOptions.setOptions();
-
-        // check if all options meet our requirements
-        cmdOptions.checkOptions();
-
-        // create the phonebooks element, contains a phonebook element
-        Phonebooks pbs = new Phonebooks();
-
-        // create the phonebook element, will contain all of our contacts, and
-        // assign it to our phonebooks element
-        Phonebook pb = new Phonebook(cmdOptions.phonebookName, 1);
-        pbs.setPhonebooks(pb);
-
-        // check if vcard input is given via stdin
-        if (!"-".equals(cmdOptions.vcardFile)) {
-            if (cmdOptions.vcardDirectory.isEmpty()) {
-                // Read in a single vCards
-                try {
-
-                    File file = new File(cmdOptions.vcardFile);
-                    // get all vcard entries from file
-                    vcard = Ezvcard.parse(file).all();
-                } catch (IOException e) {
-                    System.out.println("Error while opening file: " + cmdOptions.vcardFile + " StackTrace:\n" + e.getStackTrace());
-                }
-            } else {
-                // check directory if it exists
-                File dir = new File(cmdOptions.vcardDirectory);
-                vcard = new ArrayList<>();
-                if (dir.exists() && dir.isDirectory()) {
-                    ArrayList<File> files = new ArrayList();
-                    for (File f : dir.listFiles()) {
-                        if (f.isFile()) {
-//                            files.add(f);
-                            List<VCard> tmpVcard = Ezvcard.parse(f).all();
-                            vcard.addAll(tmpVcard);
-                        }
-                    }
-                }
-            }
-        } else {
-            // we get our vcard infos over stdin
-            try {
-                InputStreamReader inStreamReader = new InputStreamReader(System.in);
-                // get all vcard entries from stdin
-                vcard = Ezvcard.parse(inStreamReader).all();
-            } catch (IOException ioe) {
-                System.out.println("Error while opening the InputStreamReader" + ioe.getLocalizedMessage());
-            }
+                main.createContactsFromVCards();
+                break;
+            default:
+                System.out.println("Something went wrong at file type determining. Exiting...");
+                System.exit(2);
         }
-
-        // iterate of any vcard entries
-        Iterator<VCard> vcardIterator = vcard.iterator();
-
-        // initialize the uid counter for contacts
-        int uidCounter = 1;
-
-        while (vcardIterator.hasNext()) {
-            // get next vcard entry
-            VCard vcardElement = vcardIterator.next();
-
-            // create new contact to represent the actual vcard element
-            Contact c1 = new Contact();
-
-            String tmpmail = new String();
-
-            if (vcardElement.getEmails().isEmpty()) {
-                tmpmail = "";
-            } else {
-                tmpmail = vcardElement.getEmails().get(0).getValue();
-            }
-            c1.setServices(tmpmail);
-
-            // TODO: nach mehreren Begriffen suchen, wie cell, mobile etc.
-            Telephony tp = new Telephony(Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"),
-                    Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"), Main.getTelephoneNumberByType(
-                    vcardElement.getTelephoneNumbers(), "cell"));
-
-            c1.setTelephony(tp);
-
-            // skip contact with no mail address and telephone numbers if
-            // command line option -s is given
-            if (cmdOptions.skipEmptyContacts && tp.isEmpty() && c1.getServices().getEmail().isEmpty()) {
-                System.out.println("Skipping: " + vcardElement.getFormattedName().getValue());
-                continue;
-            }
-
-            Person p = new Person();
-            p.setRealName(vcardElement.getStructuredName().getGiven(), vcardElement.getStructuredName().getFamily(),
-                    cmdOptions.reversedOrder);
-            c1.setPerson(p);
-
-            c1.setMod_time();
-            c1.setUid(uidCounter++);
-
-            // add contact to out phonebook element
-            pb.addContact(c1);
-            c1 = null;
-        }
-
-        JAXBContext context = JAXBContext.newInstance(Phonebooks.class);
-        Marshaller m = context.createMarshaller();
-        m.setProperty(Marshaller.JAXB_FORMATTED_OUTPUT, Boolean.TRUE);
-
-        // output should be directed to stdout or file if Option -o is given
-        if (cmdOptions.outputFile.isEmpty()) {
-            m.marshal(pbs, System.out);
-        } else {
-            m.marshal(pbs, new File(cmdOptions.outputFile));
-        }
+        main.marshall();
     }
 }

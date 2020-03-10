@@ -17,9 +17,21 @@
  */
 package org.berkholz.vcard2fritzXML;
 
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import ezvcard.VCardVersion;
+import ezvcard.parameters.EmailTypeParameter;
+import ezvcard.parameters.TelephoneTypeParameter;
+import ezvcard.types.FormattedNameType;
+import ezvcard.types.StructuredNameType;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.GnuParser;
+import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 
@@ -31,13 +43,14 @@ public class CommandOptions {
 
     Options options;
     CommandLine cmd;
-    String outputFile = "";
-    String vcardDirectory = "";
-    String vcardFile = "";
-    String phonebookName = "Privat"; // Default phonebook name is "Privat"
+    String outputFile;
+    String inDirectory;
+    String inFile;
+    String phonebookName;
     String[] args;
-    boolean skipEmptyContacts = false;
-    boolean reversedOrder = false;
+    boolean skipEmptyContacts;
+    boolean reversedOrder;
+    private String filetype;
 
     /**
      *
@@ -46,8 +59,16 @@ public class CommandOptions {
      *
      */
     public CommandOptions(String[] args) throws ParseException {
+        this.inFile = "";
+        this.outputFile = "";
+        this.inDirectory = "";
+        // Default phonebook name is "Privat"
+        this.phonebookName = "Privat";
+        this.reversedOrder = false;
+        this.skipEmptyContacts = false;
         this.options = new Options();
         this.args = args;
+        this.filetype = "vcf";
     }
 
     /**
@@ -59,17 +80,21 @@ public class CommandOptions {
         // options definitions
         this.options.addOption("h", "help", false, "Show help.");
         this.options.addOption("d", "directory", true,
-                "Directory to search for vcards. Every contact is given in a single vcard file. [NOT YET IMPLEMENTED.]");
-        this.options.addOption("f", "file", true, "Read all contacts from Vcard file or from stdin.");
+                "Directory to search for vcards/CSVs. Every contact is given in a single vcard/CSV file.");
+        this.options.addOption("f", "file", true, "Read all contacts from Vcard/CSV file or from stdin.");
         this.options.addOption("o", "outfile", true, "Save XML output to file.");
+        this.options.addOption("t", "filetype", true, "Specify the file format. Possible values are: csv, vcf. Default: vcf.");
         this.options.addOption("n", "phonebookname", true, "Rename phonebook to given name.");
+        this.options.addOption("c", "create-template", false, "Create a template file for importing and exit. Used with Option -t.");
         this.options.addOption("r", "reversed-name-order", false,
                 "Reverse the default order of the fullname. Default order: <surname> <name>.");
+
         this.options.addOption("s", "skip-empty-contacts", false, "Skip contacts with no mail address and no telephone numbers.");
         this.options.addOption("v", "verbose", false, "Be verbose. [NOT YET IMPLEMENTED.]");
 
         // instantiate parser with our options
-        CommandLineParser parser = new GnuParser();
+        //CommandLineParser parser = new GnuParser();
+        CommandLineParser parser = new DefaultParser();
         this.cmd = parser.parse(this.options, this.args);
     }
 
@@ -83,8 +108,35 @@ public class CommandOptions {
             System.exit(0);
         }
 
+        // creating the template file. 
+        if (cmd.hasOption("c")) {
+            generateTemplateFile();
+            System.exit(0);
+        }
+
         if (cmd.hasOption("o")) {
             this.outputFile = cmd.getOptionValue("o");
+        }
+
+        if (cmd.hasOption("t")) {
+            this.filetype = cmd.getOptionValue("t");
+            // check if a supported file type is specified
+            if (!"vcf".equals(filetype) && !"csv".equals(filetype)) {
+                System.out.println("You have to specify a valid file type.\n");
+                Main.printHelp(this.options);
+                System.exit(1);
+            } else {
+                // check if option -d is given and filetype csv, this is not supported yet.
+                if ("csv".equals(filetype) && cmd.hasOption("d")) {
+                    System.out.println("Option -d in conjuction with filetype csv is not implemented yet. Please specify only a file or use vcard file format.\n");
+                    Main.printHelp(this.options);
+                    System.exit(1);
+                }
+            }
+        } else {
+            System.out.println("You have to specify the file type.\n");
+            Main.printHelp(this.options);
+            System.exit(1);
         }
 
         // check if both options (-f and -d) are given or not.
@@ -97,12 +149,13 @@ public class CommandOptions {
             System.exit(1);
         }
 
+        // check if option -d is given and read in vcard from dir
         if (cmd.hasOption("d")) {
-             vcardDirectory = cmd.getOptionValue("d");
-             System.out.println("Reading vcard files from directory: " +
-             vcardDirectory);
+            inDirectory = cmd.getOptionValue("d");
+            System.out.println("Reading vcard files from directory: "
+                    + inDirectory);
         } else if (cmd.hasOption("f")) {
-            vcardFile = cmd.getOptionValue("f");
+            inFile = cmd.getOptionValue("f");
         }
 
         if (cmd.hasOption("n")) {
@@ -116,5 +169,39 @@ public class CommandOptions {
         if (cmd.hasOption("r")) {
             reversedOrder = true;
         }
+    }
+
+    private void generateTemplateFile() {
+        try {
+            Files.write(Paths.get("template." + cmd.getOptionValue("t")), generateTemplate(cmd.getOptionValue("t")).getBytes());
+        } catch (IOException ex) {
+            Logger.getLogger(CommandOptions.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+
+    private static String generateTemplate(String filetype) {
+        if ("csv".equals(filetype)) {
+            return generateCSVTemplate();
+        } else if ("vcf".equals(filetype)) {
+            return generateVcardTemplate();
+        }
+        return null;
+    }
+
+    private static String generateCSVTemplate() {
+        return "";
+    }
+
+    private static String generateVcardTemplate() {
+        VCard vcardExample = new VCard();
+
+        vcardExample.addFormattedName(new FormattedNameType("John Doe"));
+        vcardExample.addEmail("ma@dsfdsf.de", EmailTypeParameter.HOME);
+        vcardExample.addTelephoneNumber("082137097123", TelephoneTypeParameter.HOME);
+        StructuredNameType sn = new StructuredNameType();
+        sn.setGiven("sadad");
+        sn.setFamily("Doe");
+        vcardExample.setStructuredName(sn);
+        return Ezvcard.write(vcardExample).version(VCardVersion.V4_0).go();
     }
 }
