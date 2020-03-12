@@ -273,12 +273,11 @@ public class Main {
                 p.setRealName(vcardElement.getStructuredName().getGiven(), vcardElement.getStructuredName().getFamily(),
                         cmdOptions.reversedOrder);
             } else if (vcardElement.getFormattedName() != null) {
-                p.setRealName(vcardElement.getFormattedName().getValue(), vcardElement.getStructuredName().getFamily(),
-                        cmdOptions.reversedOrder);
+                p.setRealName(vcardElement.getFormattedName().getValue(), "", cmdOptions.reversedOrder);
             } else {
                 p.setRealName("");
             }
-            
+
             c1.setPerson(p);
 
             c1.setMod_time();
