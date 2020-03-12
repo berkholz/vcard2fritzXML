@@ -15,7 +15,6 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package org.berkholz.vcard2fritzXML;
 
 import javax.xml.bind.annotation.XmlAccessType;
@@ -24,12 +23,13 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.XmlValue;
 import org.apache.commons.validator.routines.EmailValidator;
+import org.apache.commons.lang3.StringUtils;
 
 /**
  * Mail address of the contact.
- * 
+ *
  * @author Marcel Berkholz
- * 
+ *
  */
 
 /*
@@ -39,89 +39,96 @@ import org.apache.commons.validator.routines.EmailValidator;
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(name = "email")
 public class EMail {
-	@XmlAttribute
-	private final Integer id;
 
-	@XmlAttribute
-	private final String classifier;
+    @XmlAttribute
+    private final Integer id;
 
-	@XmlValue
-	private String email;
+    @XmlAttribute
+    private final String classifier;
 
-	/**
-	 * Instantiate an email address (constructor).
-	 */
-	public EMail() {
-		this.email = new String();
-		this.classifier = "private";
-		// there is only one mail address possible
-		this.id = 0;
-	}
+    @XmlValue
+    private String email;
 
-	/**
-	 * Instantiate an email address with the given email address(constructor).
-	 * 
-	 * @param email Mail address to instantiate with.
-	 */
-	public EMail(String email) {
-		this.email = new String();
+    /**
+     * Instantiate an email address (constructor).
+     */
+    public EMail() {
+        this.email = new String();
+        this.classifier = "private";
+        // there is only one mail address possible
+        this.id = 0;
+    }
 
-		// validate the mail address before creating an object
-		if (EMail.validateEmail(email)) {
-			this.setEmail(email);
-		}
+    /**
+     * Instantiate an email address with the given email address(constructor).
+     *
+     * @param email Mail address to instantiate with.
+     */
+    public EMail(String email) {
+        /* 
+        extract mail part from a given mail in format "Givenname Familyname <xyz@domain.tld>"
+        and validate the mail address before creating an object 
+         */
+        if (EMail.validateEmail(extractMailPart(email))) {
+            this.setEmail(extractMailPart(email));
+        }
 
-		this.classifier = "private";
-		// there is only one mail address possible
-		this.id = 0;
-	}
+        this.classifier = "private";
+        // there is only one mail address possible
+        this.id = 0;
+    }
 
-	/**
-	 * Checks if a mail address is set.
-	 * 
-	 * @return Returns true if no mail address is given otherwise false.
-	 */
-	public boolean isEmpty() {
+    /**
+     * Checks if a mail address is set.
+     *
+     * @return Returns true if no mail address is given otherwise false.
+     */
+    public boolean isEmpty() {
         return this.email.isEmpty();
-	}
+    }
 
-	/**
-	 * Get the mail address.
-	 * 
-	 * @return The mail address as String.
-	 */
-	public String getEmail() {
-		return email;
-	}
+    /**
+     * Get the mail address.
+     *
+     * @return The mail address as String.
+     */
+    public String getEmail() {
+        return email;
+    }
 
-	/**
-	 * Set the mail address.
-	 * 
-	 * @param email Mail address as String representation.
-	 */
-	public void setEmail(String email) {
-		if (EMail.validateEmail(email))
-			this.email = email;
-		else
-			System.out.println("Mail address \'" + email + "\' is not valid.");
-	}
+    /**
+     * Set the mail address.
+     *
+     * @param email Mail address as String representation.
+     */
+    public void setEmail(String email) {
+        if (EMail.validateEmail(email)) {
+            this.email = email;
+        } else {
+            System.out.println("Mail address \'" + email + "\' is not valid.");
+        }
+    }
 
-	/**
-	 * Validate a mail address.
-	 * 
-	 * @param email Mail address as String representation.
-	 * @return True if mail address is valid, otherwise false.
-	 */
-	public static boolean validateEmail(String email) {
-		if (email.isEmpty()) {
-			// if no mail is in the contact, we accept an empty string
-			return true;
-		} else {
-			// Get an EmailValidator
-			EmailValidator validator = EmailValidator.getInstance();
+    /**
+     * Validate a mail address.
+     *
+     * @param email Mail address as String representation.
+     * @return True if mail address is valid, otherwise false.
+     */
+    public static boolean validateEmail(String email) {
+        if (email.isEmpty()) {
+            // if no mail is in the contact, we accept an empty string
+            return true;
+        } else {
+            // Get an EmailValidator
+            EmailValidator validator = EmailValidator.getInstance();
 
-			// Validate an email address
-			return validator.isValid(email);
-		}
-	}
+            // Validate an email address
+            return validator.isValid(email);
+        }
+    }
+
+    private String extractMailPart(String email) {
+        return StringUtils.substringBetween(email, "<", ">");
+    }
 }
