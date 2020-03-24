@@ -76,7 +76,7 @@ public class CommandOptions {
      *
      * @throws ParseException
      */
-    public void setOptions() throws ParseException {
+    public void setOptions() {
         // options definitions
         this.options.addOption("h", "help", false, "Show help.");
         this.options.addOption("d", "directory", true,
@@ -94,8 +94,14 @@ public class CommandOptions {
 
         // instantiate parser with our options
         //CommandLineParser parser = new GnuParser();
-        CommandLineParser parser = new DefaultParser();
-        this.cmd = parser.parse(this.options, this.args);
+        try {
+            CommandLineParser parser = new DefaultParser();
+            this.cmd = parser.parse(this.options, this.args);
+        } catch (ParseException e) {
+            System.out.println("Error while parsing the command line options. " + e.getLocalizedMessage() + "\n");
+            Main.printHelp(options);
+            System.exit(1);
+        }
     }
 
     /**
@@ -119,7 +125,15 @@ public class CommandOptions {
         }
 
         if (cmd.hasOption("t")) {
-            this.filetype = cmd.getOptionValue("t");
+            try {
+                if (cmd.getOptionValue("t").equalsIgnoreCase("")) {
+                }
+                this.filetype = cmd.getOptionValue("t");
+            } catch (Exception ex) {
+                System.out.println("Option -t has no value given.");
+                Main.printHelp(this.options);
+                System.exit(1);
+            }
             // check if a supported file type is specified
             if (!"vcf".equals(filetype) && !"csv".equals(filetype)) {
                 System.out.println("You have to specify a valid file type.\n");
