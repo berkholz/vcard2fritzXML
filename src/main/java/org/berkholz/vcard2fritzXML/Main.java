@@ -50,7 +50,7 @@ public class Main {
      * VARIABLES
      */
     List<VCard> vcard;
-
+    
     List<CSVRecord> csv;
 
     // Options object including file and directory name
@@ -86,7 +86,7 @@ public class Main {
 
         //pb = new Phonebook(Main.cmdOptions.phonebookName, 1);
         pb = new Phonebook(cmdOptions.phonebookName, 1);
-
+        
         pbs.setPhonebooks(pb);
     }
 
@@ -123,7 +123,7 @@ public class Main {
             // we get our vcard infos over stdin
             try {
                 InputStreamReader inStreamReader = new InputStreamReader(System.in);
-
+                
                 CSVParser csvParser = new CSVParser(inStreamReader, CSVFormat.DEFAULT
                         .withFirstRecordAsHeader()
                         .withIgnoreHeaderCase()
@@ -148,7 +148,7 @@ public class Main {
             if (this.cmdOptions.inDirectory.isEmpty()) {
                 // Read in a single vCards
                 try {
-
+                    
                     File file = new File(this.cmdOptions.inFile);
                     // get all vcard entries from file
                     this.vcard = Ezvcard.parse(file).all();
@@ -161,7 +161,7 @@ public class Main {
                 this.vcard = new ArrayList<>();
                 if (dir.exists() && dir.isDirectory()) {
                     ArrayList<File> files = new ArrayList();
-
+                    
                     for (File f : dir.listFiles(Main.getFileNameFilter("vcf"))) {
                         if (f.isFile()) {
 //                            files.add(f);
@@ -192,7 +192,7 @@ public class Main {
 
         // initialize the uid counter for contacts
         int uidCounter = 1;
-
+        
         while (csvIterator.hasNext()) {
             // get next vcard entry
             CSVRecord csvElement = csvIterator.next();
@@ -203,9 +203,9 @@ public class Main {
             //CSV-HEADER: givenname, familyname, home, work, mobile, fax_work, email
             //String fax_work = csvElement.get("fax_work");
             c1.setServices(csvElement.get("email"));
-
+            
             Telephony tp = new Telephony(csvElement.get("home"), csvElement.get("work"), csvElement.get("mobile"));
-
+            
             c1.setTelephony(tp);
 
             // skip contact with no mail address and telephone numbers if
@@ -214,11 +214,11 @@ public class Main {
                 System.out.println("Skipping: " + csvElement.toString());
                 continue;
             }
-
+            
             Person p = new Person();
             p.setRealName(csvElement.get("givenname"), csvElement.get("familyname"), cmdOptions.reversedOrder);
             c1.setPerson(p);
-
+            
             c1.setMod_time();
             c1.setUid(uidCounter++);
 
@@ -237,14 +237,14 @@ public class Main {
 
         // initialize the uid counter for contacts
         int uidCounter = 1;
-
+        
         while (vcardIterator.hasNext()) {
             // get next vcard entry
             VCard vcardElement = vcardIterator.next();
 
             // create new contact to represent the actual vcard element
             Contact c1 = new Contact();
-
+            
             String tmpmail = "";
 
             // if field mail is not empty take vcard entry
@@ -257,7 +257,7 @@ public class Main {
             Telephony tp = new Telephony(Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"),
                     Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"), Main.getTelephoneNumberByType(
                     vcardElement.getTelephoneNumbers(), "cell"));
-
+            
             c1.setTelephony(tp);
 
             // skip contact with no mail address and telephone numbers if
@@ -266,20 +266,24 @@ public class Main {
                 System.out.println("Skipping: " + vcardElement.getFormattedName().getValue());
                 continue;
             }
-
+            
             Person p = new Person();
 
+            // First use structured name, if not set use formatted name. 
+            // In case both are empty and a company is set use this instead.
             if (vcardElement.getStructuredName() != null) {
                 p.setRealName(vcardElement.getStructuredName().getGiven(), vcardElement.getStructuredName().getFamily(),
                         cmdOptions.reversedOrder);
             } else if (vcardElement.getFormattedName() != null) {
                 p.setRealName(vcardElement.getFormattedName().getValue(), "", cmdOptions.reversedOrder);
+            } else if (vcardElement.getOrganization() != null) {
+                p.setRealName(vcardElement.getOrganization().getValues().get(0), "", cmdOptions.reversedOrder);
             } else {
                 p.setRealName("");
             }
-
+            
             c1.setPerson(p);
-
+            
             c1.setMod_time();
             c1.setUid(uidCounter++);
 
@@ -314,15 +318,15 @@ public class Main {
     public static void printHelp(Options options) {
         HelpFormatter formatter = new HelpFormatter();
         formatter.printHelp("vcard2fritzXML", options);
-
+        
         System.out.println("\nExamples: ");
         System.out.println("\tvcard2fritzXML -t vcf -f c:\\path\\to\\vcards\\all_vcards.vcard > fritz_phonebook.xml");
         System.out.println("\tcat test.vcf | vcard2fritzXML -t vcf -f - > fritz_phonebook.xml ");
         System.out.println("\tvcard2fritzXML -t vcf -d c:\\path\\to\\vcards\\ > fritz_phonebook.xml");
         System.out.println("\tvcard2fritzXML -t csv c:\\path\\to\\csv_file\\ -o fritz_phonebook.xml\n");
-
+        
     }
-
+    
     private static FilenameFilter getFileNameFilter(String extension) {
         return new FilenameFilter() {
             @Override
@@ -377,7 +381,7 @@ public class Main {
      * @param fis VCard file as FileInputStream.
      */
     public static void printVCardFile(FileInputStream fis) {
-
+        
         int oneByte;
         try {
             while ((oneByte = fis.read()) != -1) {
@@ -414,7 +418,7 @@ public class Main {
             case "vcf":
                 // vcard is given, read in all entries
                 main.readInVCards();
-
+                
                 main.createContactsFromVCards();
                 break;
             default:
