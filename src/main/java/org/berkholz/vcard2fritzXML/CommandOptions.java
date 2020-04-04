@@ -74,7 +74,6 @@ public class CommandOptions {
     /**
      * Define the possible command line options.
      *
-     * @throws ParseException
      */
     public void setOptions() {
         // options definitions
