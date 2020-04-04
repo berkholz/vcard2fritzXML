@@ -34,17 +34,31 @@ public class EMailTest {
 
     EMail mail1;
     EMail mail2;
+    EMail mail3;
+    EMail mail4;
 
     @Before
     public void setup() {
         mail1 = new EMail();
         mail2 = new EMail();
+        mail3 = new EMail();
+        mail4 = new EMail();
     }
 
     @Test
     public void setValidEMail() {
         mail1.setEmail("test@example.com");
         assertEquals("test@example.com", mail1.getEmail());
+        
+        mail2.setEmail("John Doe <john.doe@example.com>");
+        assertEquals("john.doe@example.com", mail2.getEmail());
+        
+        mail3.setEmail("john.doe+folder@example.com");
+        assertEquals("john.doe+folder@example.com", mail3.getEmail());
+        
+        mail4.setEmail("john_doe@example.com");
+        assertEquals("john_doe@example.com", mail4.getEmail());
+        
     }
 
     @Test
@@ -78,8 +92,18 @@ public class EMailTest {
     }
 
     @Test
+    public void testInvalidMail_with_plus() {
+        assertFalse("Mail addresses may contain a + symbol.", EMail.validateEmail(".test.@examplecom"));
+    }
+    
+    @Test
     public void testInvalidMail_dot_at_beginning() {
         assertFalse("Mail addresses may not begin with a dot.", EMail.validateEmail(".surname@example.com"));
+    }
+    
+    @Test
+    public void testInvalidMail_at_at_beginning(){
+        assertFalse("Mail addresses may not begin with a @.", EMail.validateEmail("@surname@example.com"));
     }
 
     @Test
@@ -89,7 +113,7 @@ public class EMailTest {
     With 1.4.1 they are valid, cause of RFC5322
      */
     public void testValidMail_umlauts() {
-        mail2.setEmail("ää@example.de");
-        assertTrue("Umlauts are not allowed in local-part.", EMail.validateEmail(mail2.getEmail()));
+        EMail mail = new EMail("ää@example.de");
+        assertTrue("Umlauts are not allowed in local-part.", EMail.validateEmail(mail.getEmail()));
     }
 }

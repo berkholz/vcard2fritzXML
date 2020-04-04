@@ -4,7 +4,7 @@
 
     <groupId>org.berkholz</groupId>
     <artifactId>vcard2fritzXML</artifactId>
-    <version>0.3.2</version>
+    <version>0.3.3</version>
     <packaging>jar</packaging>
 
     <name>vcard2fritzXML</name>

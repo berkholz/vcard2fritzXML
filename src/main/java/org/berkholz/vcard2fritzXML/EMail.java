@@ -69,9 +69,7 @@ public class EMail {
         extract mail part from a given mail in format "Givenname Familyname <xyz@domain.tld>"
         and validate the mail address before creating an object 
          */
-        if (EMail.validateEmail(extractMailPart(email))) {
-            this.setEmail(extractMailPart(email));
-        }
+        this.setEmail(email);
 
         this.classifier = "private";
         // there is only one mail address possible
@@ -102,8 +100,8 @@ public class EMail {
      * @param email Mail address as String representation.
      */
     public void setEmail(String email) {
-        if (EMail.validateEmail(email)) {
-            this.email = email;
+        if (EMail.validateEmail(extractMailPart(email))) {
+            this.email = extractMailPart(email);
         } else {
             System.out.println("Mail address \'" + email + "\' is not valid.");
         }
@@ -116,7 +114,7 @@ public class EMail {
      * @return True if mail address is valid, otherwise false.
      */
     public static boolean validateEmail(String email) {
-        if (email.isEmpty()) {
+        if (email == null || email.isEmpty()) {
             // if no mail is in the contact, we accept an empty string
             return true;
         } else {
@@ -129,6 +127,10 @@ public class EMail {
     }
 
     private String extractMailPart(String email) {
-        return StringUtils.substringBetween(email, "<", ">");
+        // check if mail contains < >
+        if (email.contains("<") && email.contains(">")) {
+            return StringUtils.substringBetween(email, "<", ">");
+        }
+        return email;
     }
 }
