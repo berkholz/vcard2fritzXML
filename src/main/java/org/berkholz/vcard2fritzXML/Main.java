@@ -269,19 +269,42 @@ public class Main {
 
             Person p = new Person();
 
-            // First use structured name, if not set use formatted name. 
-            // In case both are empty and a company is set use this instead.
-            if ((vcardElement.getStructuredName().getGiven() != null && !vcardElement.getStructuredName().getGiven().isEmpty())
-                    && (vcardElement.getStructuredName().getFamily() != null && !vcardElement.getStructuredName().getFamily().isEmpty())) {
-                p.setRealName(vcardElement.getStructuredName().getGiven(), vcardElement.getStructuredName().getFamily(),
-                        cmdOptions.reversedOrder);
-            } else if (vcardElement.getFormattedName().getValue() != null && !vcardElement.getFormattedName().getValue().isEmpty()) {
-                p.setRealName(vcardElement.getFormattedName().getValue(), "", cmdOptions.reversedOrder);
-            } else if (vcardElement.getOrganization().getValues().get(0) != null && !vcardElement.getOrganization().getValues().get(0).isEmpty()) {
-                p.setRealName(vcardElement.getOrganization().getValues().get(0), "", cmdOptions.reversedOrder);
-            } else {
-                p.setRealName("");
+            String family = "", given = "";
+
+            // check if organisation is given. if N or FN is given 
+            // the values will override the value of the oranisation later
+            if (vcardElement.getOrganization() != null
+                    && !vcardElement.getOrganization().getValues().get(0).isEmpty()) {
+                given = vcardElement.getOrganization().getValues().get(0);
             }
+
+            // check if formatted name FN is not null end not empty value is saved to givenname
+            // and overrides the organisation value
+            if (vcardElement.getFormattedName() != null) {
+                if (vcardElement.getFormattedName().getValue() != null) {
+                    given = (vcardElement.getFormattedName().getValue().isEmpty())
+                            ? "" : vcardElement.getFormattedName().getValue();
+                }
+            }
+
+            // check if strictured name F is not null and not empty
+            if (vcardElement.getStructuredName() != null) {
+                // Family name has value, but given name is null
+                if (vcardElement.getStructuredName().getFamily() != null) {
+                    family = (vcardElement.getStructuredName().getFamily().isEmpty())
+                            ? "" : vcardElement.getStructuredName().getFamily();
+                    // given name has value, but family is null
+                }
+                if (vcardElement.getStructuredName().getGiven() != null) {
+                    given = (vcardElement.getStructuredName().getGiven().isEmpty())
+                            ? "" : vcardElement.getStructuredName().getGiven();
+                    // family and givenname is not null, but maybe empty
+                }
+            }
+
+            // now we have first the organisation, then the formatted name and last the structured name
+            // if all of them are empty we take "" as family and given name
+            p.setRealName(given, family, cmdOptions.reversedOrder);
 
             c1.setPerson(p);
 
