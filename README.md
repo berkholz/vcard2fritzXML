@@ -17,7 +17,7 @@ You have the choice:
 - just downlod the build. 
 
 The build ist downloadable in [releases topic](https://github.com/berkholz/vcard2fritzXML/releases) in the Code section. 
-A brief introduction for building the tool can be found in the [BUILD.md](https://github.com/berkholz/vcard2fritzXML/BUILD.md).
+A brief introduction for building the tool can be found in the [BUILD.md](https://github.com/berkholz/vcard2fritzXML/blob/master/BUILD.md).
 
 # How to use?
 For the process to import an address book into the Fritz!Box you have to:
