@@ -1,90 +1,80 @@
-These are the release notes for vcard2fritzXML.  Read them carefully,
-as they tell you what this is all about, explain how to use vcard2fritzXML, 
-and what to do if something goes wrong. 
+vcard2fritzXML is litte tool written in Java to convert a vcard or csv file into an XML file with the format of a Fritz!Box addressbook import file. 
 
-# WHAT IS vcard2fritzXML?
+# Which libraries are used?
+To get to know which dependencies are actually used for this project, take a look at the [pom.xml](https://github.com/berkholz/vcard2fritzXML/blob/master/pom.xml). 
 
-vcard2fritzXML is litte tool written in Java to convert a vcard file into an XML file 
-with the format of a Fritz!Box addressbook import file.
+The following dependencies are used (status: 2020-04-30):
+* com.googlecode.ez-vcard (version 0.8.5) [for managing vcard files]
+* org.apache.commons.commons-lang3 (version 3.9)
+* commons-cli [for command line parsing]
+* commons-validator 
+* junit (version 4.12) [for JUnit testing]
+* org.apache.commons.commons-csv (version 1.7) [managing csv files]
 
-# TESTED
+# How to build or how to get the build?
+You have the choice: 
+- build the tool by yourself or 
+- just downlod the build. 
 
-vcard2fritzXML is tested on the following environments:
-* Mac OS X 10.8.5, Maven 3.0.4, Oracle Java 1.7.0_45, FRITZ!OS 05.53
-* Windows 8.1, Maven 3.1.1, Oracle Java 1.7.0_45, FRITZ!OS 06.01
-* Ubuntu 12.04, Maven 3.0.4, Oracle Java 1.7.0_51, FRITZ!OS 4.91 and 6.01
+The build ist downloadable in [releases topic](https://github.com/berkholz/vcard2fritzXML/releases) in the Code section. 
+A brief introduction for building the tool can be found in the [BUILD.md](https://github.com/berkholz/vcard2fritzXML/BUILD.md).
 
-# SOFTWARE REQUIREMENTS
+# How to use?
+For the process to import an address book into the Fritz!Box you have to:
+* get your contacts into a vcard file or csv file.
+* convert the vcard file into xml file with Fritz!Box format, specify an address book name
+* Create an address book in the Fritz!Box with the specified name and import the xml file.
 
-You need at least
- * git 1.7 or higher (http://git-scm.com/)
- * Oracle Java 7 or higher (http://www.oracle.com/technetwork/java/index.html)
- * Maven 3.0.4 or higher (http://maven.apache.org/)
-   * ez-vcard  0.8.5 or higher (https://code.google.com/p/ez-vcard/)
-   * commons-cli 1.2  or higher (http://commons.apache.org/proper/commons-cli/)
+## Examples for usage
 
-# DOWNLOAD
+To call the help for vcard2fritzxml:
 
-As long as there is no distribution, you must download and build the tool itself.
-
-    git clone https://github.com/berkholz/vcard2fritzXML
-    
-    
-# BUILD
-
-To compile and generate JAR file with and without dependencies call:
-
-	mvn clean package
+    java -jar /PATH/TO/git-repo/target/vcard2fritzXML-0.3.5-jar-with-dependencies.jar -h
 
 
-# COMMANDLINE USAGE
+To create a csv template file (template.csv) in the actual directory:
 
-It depends on the JAR file.
-
-## JAR file with no dependencies
-
-Use the shell script:
-
-    ./vcard2fritzXML.sh -h
-
-Convert a vcard directly with Maven:
-
-    mvn exec:java -Dexec.args="-f <PATH/TO/VCARDFILE.vcf>"
+    java -jar /PATH/TO/git-repo/target/vcard2fritzXML-0.3.5-jar-with-dependencies.jar -t csv -c
 
 
-## JAR file with dependencies
+To create a vcf template file (template.vcf) in the actual directory:
 
-To call vcard2fritzXML help:
-    
-    java -jar /PATH/TO/vcard2fritzXML_HOME/target/vcard2fritzXML-1.0-SNAPSHOT-jar-with-dependencies.jar -h
+    java -jar /PATH/TO/git-repo/target/vcard2fritzXML-0.3.5-jar-with-dependencies.jar -t vcf -c
 
 
-# USAGE
-To import a vcard to your Fritz!Box you have to generate a valid vcard. 
-On an Mac you can use the Addressbook: 
-* Open Addressbook 
-* Go to the group or contact 
-* Choose option "export vcard..."
-* Save the file to a location where you can find it on a commandline, mostly everywhere ;)
+To convert a vcf file from standard out to the Fritz!Box xml format:
 
-Now you can convert the vcard file to the Fritz!Box xml file:
-
-    java -jar /PATH/TO/vcard2fritzXML-1.0-SNAPSHOT-jar-with-dependencies.jar -f "<PATH/TO/VCARDFILE.vcf>" -o "<PATH/TO/FRITZ!BOX_XML_FILE.xml>" -n "Addressbook"
-
-Go to your Fritz!Box and create a new Telphonebook named "Addressbook" and recover your Telephonebook with the XML file.
+    cat template.vcf | java -jar vcard2fritzXML-0.3.5-jar-with-dependencies.jar -t vcf -f - 
 
 
-# DEVELOPMENT
+To convert the vcard file to the Fritz!Box xml format and print out to standard out:
 
-Use the specific Maven goal to generate IDE projects file, e.g. for Eclipse
-
-    mvn eclipse:eclipse
-
-Netbeans should open it nativly as a project.
+    java -jar /PATH/TO/git-repo/target/vcard2fritzXML-0.3.5-jar-with-dependencies.jar -t vcf -f "<PATH/TO/VCARDFILE.vcf>" 
 
 
-# CONTRIBUTORS
+To convert the vcard file to the Fritz!Box xml format and save it to file:
 
+    java -jar vcard2fritzXML-0.3.5-jar-with-dependencies.jar -t vcf -f "<PATH/TO/VCARDFILE.vcf>" -o "<PATH/TO/OUTFILE.xml"
+
+
+To convert the vcard file to the Fritz!Box xml format and set the address book name to "Syncronized":
+
+    java -jar vcard2fritzXML-0.3.5-jar-with-dependencies.jar -t vcf -f "<PATH/TO/VCARDFILE.vcf>" -n "Syncronized"
+
+
+## Import into Fritz!Box
+Go to your Fritz!Box and create a new Telphonebook named "Addressbook" or as set via command line and recover your Telephonebook with the XML file.
+
+
+# Tested 
+Building the software is tested on the folowing setups:
+* Linux (Fedora 30) with OpenJDK 1.8, Maven 3.4.5 
+
+Importing the xml export is tested on:
+* FritzOS 07.19-77061 BETA 
+
+
+# Contributors
 Special thanks to the following persons, who helped making this software better:
 * Danny Gräf
 * Ludger Kluitmann
