@@ -15,15 +15,14 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place - Suite 330, Boston, MA  02111-1307, USA.
  */
-
 package org.berkholz.vcard2fritzXML;
 
 /**
- * Type of the number in the address book. 
- * 
+ * Type of the number in the address book.
+ *
  * @author Marcel Berkholz
  *
  */
 public enum NumberType {
-	home, work, mobile, fax_work
+    home, work, mobile, fax_work
 }
