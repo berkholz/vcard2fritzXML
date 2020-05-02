@@ -185,6 +185,7 @@ public class CommandOptions {
     }
 
     private void generateTemplateFile() {
+        // TODO: check if option f is given and take this filename instead
         try {
             Files.write(Paths.get("template." + cmd.getOptionValue("t")), generateTemplate(cmd.getOptionValue("t")).getBytes());
         } catch (IOException ex) {
@@ -202,17 +203,19 @@ public class CommandOptions {
     }
 
     private static String generateCSVTemplate() {
-        return "";
+        return "givenname,familyname,home,work,mobile,email\nJohn,Doe,0821/37097123,,,john.doe@example.com";
     }
 
     private static String generateVcardTemplate() {
         VCard vcardExample = new VCard();
 
         vcardExample.addFormattedName(new FormattedNameType("John Doe"));
-        vcardExample.addEmail("ma@dsfdsf.de", EmailTypeParameter.HOME);
-        vcardExample.addTelephoneNumber("082137097123", TelephoneTypeParameter.HOME);
+        vcardExample.addEmail("john.doe@example.com", EmailTypeParameter.HOME);
+        vcardExample.addTelephoneNumber("0821/37097123", TelephoneTypeParameter.HOME);
+        vcardExample.addTelephoneNumber("0821/37097122", TelephoneTypeParameter.WORK);
+        vcardExample.addTelephoneNumber("0171/37097121", TelephoneTypeParameter.CELL);
         StructuredNameType sn = new StructuredNameType();
-        sn.setGiven("sadad");
+        sn.setGiven("John");
         sn.setFamily("Doe");
         vcardExample.setStructuredName(sn);
         return Ezvcard.write(vcardExample).version(VCardVersion.V4_0).go();
