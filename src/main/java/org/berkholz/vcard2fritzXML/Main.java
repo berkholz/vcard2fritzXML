@@ -204,7 +204,7 @@ public class Main {
             //String fax_work = csvElement.get("fax_work");
             c1.setServices(csvElement.get("email"));
 
-            Telephony tp = new Telephony(csvElement.get("home"), csvElement.get("work"), csvElement.get("mobile"));
+            Telephony tp = new Telephony(csvElement.get("home"), csvElement.get("work"), csvElement.get("mobile"), csvElement.get("fax"));
 
             c1.setTelephony(tp);
 
@@ -256,7 +256,7 @@ public class Main {
             // TODO: nach mehreren Begriffen suchen, wie cell, mobile etc.
             Telephony tp = new Telephony(Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"),
                     Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"), Main.getTelephoneNumberByType(
-                    vcardElement.getTelephoneNumbers(), "cell"));
+                    vcardElement.getTelephoneNumbers(), "cell"), Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "fax"));
 
             c1.setTelephony(tp);
 

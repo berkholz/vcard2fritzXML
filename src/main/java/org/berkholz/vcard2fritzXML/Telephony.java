@@ -18,6 +18,7 @@
 package org.berkholz.vcard2fritzXML;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -45,7 +46,7 @@ public class Telephony {
      * @param numberWork String representation of the work number.
      * @param numberMobile String representation of the mobile number.
      */
-    public Telephony(String numberHome, String numberWork, String numberMobile) {
+    public Telephony(String numberHome, String numberWork, String numberMobile, String numberFax) {
         // create list of Numbers
         this.numbers = new ArrayList<>();
 
@@ -72,6 +73,13 @@ public class Telephony {
         mobileNumber.setPrio(2); // set priority of mobile number
         mobileNumber.setType(NumberType.mobile);
         this.numbers.add(mobileNumber); // add number to list
+        
+        // create fax number
+        Number faxNumber = new Number(numberFax);
+        faxNumber.setId(3); // set id of mobile number
+        faxNumber.setPrio(4); // set priority of mobile number
+        faxNumber.setType(NumberType.fax_work);
+        this.numbers.add(faxNumber); // add number to list
 
         // change number prio if numberHome is empty
         if (numberHome.isEmpty()) {
@@ -79,6 +87,7 @@ public class Telephony {
             mobileNumber.setPrio(1);
             workNumber.setPrio(2);
             homeNumber.setPrio(3);
+            faxNumber.setPrio(4);
         }
     }
 
