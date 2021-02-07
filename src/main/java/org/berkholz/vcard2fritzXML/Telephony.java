@@ -18,6 +18,7 @@
 package org.berkholz.vcard2fritzXML;
 
 import java.util.ArrayList;
+import java.util.List;
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
@@ -45,7 +46,7 @@ public class Telephony {
      * @param numberWork String representation of the work number.
      * @param numberMobile String representation of the mobile number.
      */
-    public Telephony(String numberHome, String numberWork, String numberMobile) {
+    public Telephony(String numberHome, String numberWork, String numberMobile, String numberFax) {
         // create list of Numbers
         this.numbers = new ArrayList<>();
 

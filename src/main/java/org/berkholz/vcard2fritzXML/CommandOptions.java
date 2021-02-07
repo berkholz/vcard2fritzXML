@@ -203,7 +203,7 @@ public class CommandOptions {
     }
 
     private static String generateCSVTemplate() {
-        return "givenname,familyname,home,work,mobile,email\nJohn,Doe,0821/37097123,,,john.doe@example.com";
+        return "givenname,familyname,home,work,mobile,fax,email\nJohn,Doe,0821/37097123,,,,john.doe@example.com";
     }
 
     private static String generateVcardTemplate() {
@@ -214,6 +214,7 @@ public class CommandOptions {
         vcardExample.addTelephoneNumber("0821/37097123", TelephoneTypeParameter.HOME);
         vcardExample.addTelephoneNumber("0821/37097122", TelephoneTypeParameter.WORK);
         vcardExample.addTelephoneNumber("0171/37097121", TelephoneTypeParameter.CELL);
+        vcardExample.addTelephoneNumber("030/55512345", TelephoneTypeParameter.FAX);
         StructuredNameType sn = new StructuredNameType();
         sn.setGiven("John");
         sn.setFamily("Doe");
