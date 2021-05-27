@@ -87,3 +87,12 @@ Importing the xml export is tested on:
 Special thanks to the following persons, who helped making this software better:
 * Danny Gräf
 * Ludger Kluitmann
+
+# OTHER CONTACT CONVERSION TOOLS
+
+| Tool                                                                             | Language / Plattform                                          | Web-Version                                  | Import                                                         | Export                                                                                                                             | License |
+|----------------------------------------------------------------------------------|-------------------------------------------------------------------------|----------------------------------------------|----------------------------------------------------------------|------------------------------------------------------------------------------------------------------------------------------------|--------|
+| [Contact-Conversion-Wizard](https://github.com/Rillke/Contact-Conversion-Wizard) | C# easy to run on Windows; MacOS and Linux possible                      | -                                            | Outlook, Fritz!Box XML, vCard, Fritz!Adr, CSV, Google Contacts | Outlook, Fritz!Box XML, vCard, Fritz!Adr, Snom v7, Snom v8, Gigaset Talk&Surf CSV, Asstra, Grandstream, Auerswald, Google Contacts | GPLv3  |
+| [fritzXML2vcard](https://github.com/Rillke/fritzXML2vcard)                       | JavaScript - Node.js Almost all operating systems                        | [available](https://blog.rillke.com/fritzXML2vcard/) | Fritz!Box XML                                                  | vCard(s)                                                                                                                           | MIT    |
+| [vcard2fritzXML](https://github.com/berkholz/vcard2fritzXML)                     | Java - Almost all operating systems                                        | -                                            | vCard                                                          | Fritz!Box XML                                                                                                                      | GPLv2  |
+
