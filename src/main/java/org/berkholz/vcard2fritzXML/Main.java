@@ -34,11 +34,14 @@ import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
-import ezvcard.types.EmailType;
-import ezvcard.types.TelephoneType;
+import ezvcard.parameter.EmailType;
+import ezvcard.property.Telephone;
+import ezvcard.util.Utf8Reader;
 import java.io.FilenameFilter;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Objects;
 
 /**
  * @author Marcel Berkholz
@@ -50,7 +53,7 @@ public class Main {
      * VARIABLES
      */
     List<VCard> vcard;
-
+    
     List<CSVRecord> csv;
 
     // Options object including file and directory name
@@ -151,7 +154,10 @@ public class Main {
 
                     File file = new File(this.cmdOptions.inFile);
                     // get all vcard entries from file
-                    this.vcard = Ezvcard.parse(file).all();
+                    if(this.cmdOptions.useUTF8Reader)
+                        this.vcard = Ezvcard.parse(new Utf8Reader(file)).all();
+                    else
+                        this.vcard = Ezvcard.parse(file).all();
                 } catch (IOException e) {
                     System.out.println("Error while opening file: " + this.cmdOptions.inFile + " StackTrace:\n" + Arrays.toString(e.getStackTrace()));
                 }
@@ -160,12 +166,16 @@ public class Main {
                 File dir = new File(this.cmdOptions.inDirectory);
                 this.vcard = new ArrayList<>();
                 if (dir.exists() && dir.isDirectory()) {
-                    ArrayList<File> files = new ArrayList();
+//                    ArrayList<File> files = new ArrayList();
 
                     for (File f : dir.listFiles(Main.getFileNameFilter("vcf"))) {
                         if (f.isFile()) {
 //                            files.add(f);
-                            List<VCard> tmpVcard = Ezvcard.parse(f).all();
+                            List<VCard> tmpVcard;
+                            if(this.cmdOptions.useUTF8Reader)
+                                tmpVcard = Ezvcard.parse(new Utf8Reader(f)).all();
+                            else
+                                tmpVcard = Ezvcard.parse(f).all();
                             this.vcard.addAll(tmpVcard);
                         }
                     }
@@ -174,7 +184,11 @@ public class Main {
         } else {
             // we get our vcard infos over stdin
             try {
-                InputStreamReader inStreamReader = new InputStreamReader(System.in);
+                InputStreamReader inStreamReader;
+                if(this.cmdOptions.useUTF8Reader)
+                    inStreamReader = new InputStreamReader(System.in, StandardCharsets.UTF_8);
+                else
+                    inStreamReader = new InputStreamReader(System.in);
                 // get all vcard entries from stdin
                 this.vcard = Ezvcard.parse(inStreamReader).all();
             } catch (IOException ioe) {
@@ -263,7 +277,10 @@ public class Main {
             // skip contact with no mail address and telephone numbers if
             // command line option -s is given
             if (cmdOptions.skipEmptyContacts && tp.isEmpty() && c1.getServices().getEmail().isEmpty()) {
-                System.out.println("Skipping: " + vcardElement.getFormattedName().getValue());
+                if (!Objects.isNull(vcardElement.getFormattedName()))
+                    System.out.println("Skipping: " + vcardElement.getFormattedName().getValue());
+                if (!Objects.isNull(vcardElement.getOrganization()))
+                    System.out.println("Skipping: " + vcardElement.getOrganization());
                 continue;
             }
 
@@ -286,7 +303,7 @@ public class Main {
                             ? "" : vcardElement.getFormattedName().getValue();
                 }
             }
-
+            
             // check if strictured name F is not null and not empty
             if (vcardElement.getStructuredName() != null) {
                 // Family name has value, but given name is null
@@ -301,7 +318,7 @@ public class Main {
                     // family and givenname is not null, but maybe empty
                 }
             }
-
+            
             // now we have first the organisation, then the formatted name and last the structured name
             // if all of them are empty we take "" as family and given name
             p.setRealName(given, family, cmdOptions.reversedOrder);
@@ -374,7 +391,7 @@ public class Main {
             // System.out.println(mail.getTypes());
             // TODO: Vergleich geht auf die Adresse des Objektes und nicht auf
             // den String
-            if (mail.getTypes().toString() == "[TYPE=" + mailType) {
+            if (mail.getValue() == null ? "[TYPE=" + mailType == null : mail.getValue().equals("[TYPE=" + mailType)) {
                 System.out.println(mail.getValue());
                 // return mail.getValue();
             }
@@ -389,9 +406,9 @@ public class Main {
      * @param telephoneType
      * @return The first telephone number found in the telephoneList.
      */
-    public static String getTelephoneNumberByType(List<TelephoneType> telephoneList, String telephoneType) {
+    public static String getTelephoneNumberByType(List<Telephone> telephoneList, String telephoneType) {
         // TODO: difference between work fax and home fax is not recognized
-        for (TelephoneType tel : telephoneList) {
+        for (Telephone tel : telephoneList) {
             if (tel.getTypes().toString().contains(telephoneType)) {
                 return tel.getText();
             }

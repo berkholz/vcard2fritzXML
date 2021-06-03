@@ -57,10 +57,8 @@ public class Person {
     }
 
     /**
-     * Sets the realname of the Person object in the specified name order.
-     * Default name order is "givenname name". Reversed order is "name
-     * givenname". Names will be trimmed (spaces are deleted at beginning and
-     * end).
+     * Sets the realname of the Person object in the specified name order.Default name order is "givenname name".
+     * Reversed order is "name givenname". Names will be trimmed (spaces are deleted at beginning and end).
      *
      * @param givenName The given name of the person.
      * @param familyName The family name of the person.
@@ -71,7 +69,10 @@ public class Person {
         if (reversedNameOrder) {
             givenName = checkNameNull(givenName);
             if (!givenName.isEmpty()) {
-                realName = (checkNameNull(familyName) + ", " + givenName).trim();
+                if(!familyName.isEmpty())
+                    realName = (checkNameNull(familyName) + ", " + givenName).trim();
+                else
+                    realName = givenName.trim();
             } else {
                 realName = checkNameNull(familyName).trim();
             }
