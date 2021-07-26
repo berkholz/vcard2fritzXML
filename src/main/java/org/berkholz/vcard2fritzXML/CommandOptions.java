@@ -20,10 +20,10 @@ package org.berkholz.vcard2fritzXML;
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.VCardVersion;
-import ezvcard.parameters.EmailTypeParameter;
-import ezvcard.parameters.TelephoneTypeParameter;
-import ezvcard.types.FormattedNameType;
-import ezvcard.types.StructuredNameType;
+import ezvcard.parameter.EmailType;
+import ezvcard.parameter.TelephoneType;
+import ezvcard.property.FormattedName;
+import ezvcard.property.StructuredName;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -50,6 +50,7 @@ public class CommandOptions {
     String[] args;
     boolean skipEmptyContacts;
     boolean reversedOrder;
+    boolean useUTF8Reader;
     private String filetype;
 
     /**
@@ -66,6 +67,7 @@ public class CommandOptions {
         this.phonebookName = "Privat";
         this.reversedOrder = false;
         this.skipEmptyContacts = false;
+        this.useUTF8Reader = false;
         this.options = new Options();
         this.args = args;
         this.filetype = "vcf";
@@ -79,8 +81,8 @@ public class CommandOptions {
         // options definitions
         this.options.addOption("h", "help", false, "Show help.");
         this.options.addOption("d", "directory", true,
-                "Directory to search for vcards/CSVs. Every contact is given in a single vcard/CSV file.");
-        this.options.addOption("f", "file", true, "Read all contacts from Vcard/CSV file or from stdin.");
+                "Directory to search for vCards/CSVs. Every contact is given in a single vCard/CSV file.");
+        this.options.addOption("f", "file", true, "Read all contacts from vCard/CSV file or from stdin.");
         this.options.addOption("o", "outfile", true, "Save XML output to file.");
         this.options.addOption("t", "filetype", true, "Specify the file format. Possible values are: csv, vcf. Default: vcf.");
         this.options.addOption("n", "phonebookname", true, "Rename phonebook to given name.");
@@ -89,6 +91,7 @@ public class CommandOptions {
                 "Reverse the default order of the fullname. Default order: <surname> <name>.");
 
         this.options.addOption("s", "skip-empty-contacts", false, "Skip contacts with no mail address and no telephone numbers.");
+        this.options.addOption("u", "use-utf8-reader ", false, "Set the vCard reader to UTF-8 character set");
         this.options.addOption("v", "verbose", false, "Be verbose. [NOT YET IMPLEMENTED.]");
 
         // instantiate parser with our options
@@ -182,6 +185,10 @@ public class CommandOptions {
         if (cmd.hasOption("r")) {
             reversedOrder = true;
         }
+        
+        if (cmd.hasOption("u")) {
+            useUTF8Reader = true;
+        }
     }
 
     private void generateTemplateFile() {
@@ -209,13 +216,13 @@ public class CommandOptions {
     private static String generateVcardTemplate() {
         VCard vcardExample = new VCard();
 
-        vcardExample.addFormattedName(new FormattedNameType("John Doe"));
-        vcardExample.addEmail("john.doe@example.com", EmailTypeParameter.HOME);
-        vcardExample.addTelephoneNumber("0821/37097123", TelephoneTypeParameter.HOME);
-        vcardExample.addTelephoneNumber("0821/37097122", TelephoneTypeParameter.WORK);
-        vcardExample.addTelephoneNumber("0171/37097121", TelephoneTypeParameter.CELL);
-        vcardExample.addTelephoneNumber("030/55512345", TelephoneTypeParameter.FAX);
-        StructuredNameType sn = new StructuredNameType();
+        vcardExample.addFormattedName(new FormattedName("John Doe"));
+        vcardExample.addEmail("john.doe@example.com", EmailType.HOME);
+        vcardExample.addTelephoneNumber("0821/37097123", TelephoneType.HOME);
+        vcardExample.addTelephoneNumber("0821/37097122", TelephoneType.WORK);
+        vcardExample.addTelephoneNumber("0171/37097121", TelephoneType.CELL);
+        vcardExample.addTelephoneNumber("030/55512345", TelephoneType.FAX);
+        StructuredName sn = new StructuredName();
         sn.setGiven("John");
         sn.setFamily("Doe");
         vcardExample.setStructuredName(sn);
