@@ -2,8 +2,8 @@ Here you find informations to build the tool by yourself.
 
 # Requirements for building
 For building the jar file you need the following software:
-* Java OpenJDK 1.8 
-  * (Package for Fedora: java-1.8.0-openjdk)
+* Java OpenJDK 11 
+  * (Package for Fedora: java-11-openjdk java-11-openjdk-devel)
 * Apache Maven 3.5.4 (http://maven.apache.org/)
   * (Packages for Fedora: maven, maven-jar-plugin)
 * git 1.7 or higher (http://git-scm.com/)
