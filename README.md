@@ -70,6 +70,11 @@ To convert the vcard file to the Fritz!Box xml format and set the address book n
     java -jar vcard2fritzXML-0.4.2-jar-with-dependencies.jar -t vcf -f "<PATH/TO/VCARDFILE.vcf>" -n "Syncronized"
 
 
+Force to convert an utf-8 formatted vcard file under windows to the Fritz!Box xml format:
+
+    java -jar vcard2fritzXML-0.4.2-jar-with-dependencies.jar -t vcf -f "<PATH/TO/VCARDFILE.vcf>" -u -o "<PATH/TO/VCARDFILE.vcf>"
+
+
 ## Import into Fritz!Box
 Go to your Fritz!Box and create a new Telphonebook named "Addressbook" or as set via command line and recover your Telephonebook with the XML file.
 
