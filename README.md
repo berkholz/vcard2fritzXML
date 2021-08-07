@@ -85,6 +85,7 @@ Building the software is tested on the folowing setups:
 
 Importing the xml export is tested on:
 * FritzOS 07.21
+* FritzOS 07.27
 
 
 # Contributors
