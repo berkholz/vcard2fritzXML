@@ -19,29 +19,32 @@ package org.berkholz.vcard2fritzXML;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Objects;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
+
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVRecord;
+
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.parameter.EmailType;
 import ezvcard.property.Telephone;
 import ezvcard.util.Utf8Reader;
-import java.io.FilenameFilter;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Objects;
 
 /**
  * @author Marcel Berkholz
@@ -109,11 +112,12 @@ public class Main {
                 try {
                     // get all csv entries from file
                     InputStreamReader inStreamReader = new InputStreamReader(new FileInputStream(this.cmdOptions.inFile));
-                    CSVParser csvParser = new CSVParser(inStreamReader, CSVFormat.DEFAULT
+                    try (CSVParser csvParser = new CSVParser(inStreamReader, CSVFormat.DEFAULT
                             .withFirstRecordAsHeader()
                             .withIgnoreHeaderCase()
-                            .withTrim());
-                    this.csv = csvParser.getRecords();
+                            .withTrim())) {
+                        this.csv = csvParser.getRecords();
+                    }
                 } catch (IOException e) {
                     System.out.println("Error while opening file: " + this.cmdOptions.inFile + " StackTrace:\n" + Arrays.toString(e.getStackTrace()));
                 }
@@ -127,13 +131,14 @@ public class Main {
             try {
                 InputStreamReader inStreamReader = new InputStreamReader(System.in);
 
-                CSVParser csvParser = new CSVParser(inStreamReader, CSVFormat.DEFAULT
+                // get all vcard entries from stdin
+                try (CSVParser csvParser = new CSVParser(inStreamReader, CSVFormat.DEFAULT
                         .withFirstRecordAsHeader()
                         .withIgnoreHeaderCase()
-                        .withTrim());
-
-                // get all vcard entries from stdin
-                this.csv = csvParser.getRecords();
+                        .withTrim())) {
+                    // get all vcard entries from stdin
+                    this.csv = csvParser.getRecords();
+                }
             } catch (IOException ioe) {
                 System.out.println("Error while opening the InputStreamReader" + ioe.getLocalizedMessage());
             }
@@ -369,12 +374,7 @@ public class Main {
     }
 
     private static FilenameFilter getFileNameFilter(String extension) {
-        return new FilenameFilter() {
-            @Override
-            public boolean accept(File dir, String name) {
-                return name.toLowerCase().endsWith(extension);
-            }
-        };
+        return (File dir, String name) -> name.toLowerCase().endsWith(extension);
     }
 
     /**
@@ -425,11 +425,12 @@ public class Main {
 
         int oneByte;
         try {
-            while ((oneByte = fis.read()) != -1) {
-                System.out.write(oneByte);
-                // System.out.print((char)oneByte); // could also do this
+            try (fis) {
+                while ((oneByte = fis.read()) != -1) {
+                    System.out.write(oneByte);
+                    // System.out.print((char)oneByte); // could also do this
+                }
             }
-            fis.close();
         } catch (IOException e) {
             System.out.println("Error while printing the vcard file:\nStackTrace:\n" + Arrays.toString(e.getStackTrace()));
         }
@@ -450,7 +451,7 @@ public class Main {
         Main main = new Main(args);
 
         // check if vcard or csv is given
-        switch (main.cmdOptions.cmd.getOptionValue("t")) {
+        switch (main.cmdOptions.filetype) {
             case "csv":
                 // csv is given, read in all entries
                 main.readInCSVs();

@@ -17,6 +17,18 @@
  */
 package org.berkholz.vcard2fritzXML;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+
 import ezvcard.Ezvcard;
 import ezvcard.VCard;
 import ezvcard.VCardVersion;
@@ -24,16 +36,6 @@ import ezvcard.parameter.EmailType;
 import ezvcard.parameter.TelephoneType;
 import ezvcard.property.FormattedName;
 import ezvcard.property.StructuredName;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.apache.commons.cli.CommandLine;
-import org.apache.commons.cli.CommandLineParser;
-import org.apache.commons.cli.DefaultParser;
-import org.apache.commons.cli.Options;
-import org.apache.commons.cli.ParseException;
 
 /**
  * @author Marcel Berkholz <code@berkholz.org>
@@ -51,7 +53,7 @@ public class CommandOptions {
     boolean skipEmptyContacts;
     boolean reversedOrder;
     boolean useUTF8Reader;
-    private String filetype;
+    String filetype;
 
     /**
      *
@@ -84,7 +86,7 @@ public class CommandOptions {
                 "Directory to search for vCards/CSVs. Every contact is given in a single vCard/CSV file.");
         this.options.addOption("f", "file", true, "Read all contacts from vCard/CSV file or from stdin.");
         this.options.addOption("o", "outfile", true, "Save XML output to file.");
-        this.options.addOption("t", "filetype", true, "Specify the file format. Possible values are: csv, vcf. Default: vcf.");
+        this.options.addOption("t", "filetype", true, "Specify the file format. Possible values are: csv, vcf. Default if no -t option is specified: vcf.");
         this.options.addOption("n", "phonebookname", true, "Rename phonebook to given name.");
         this.options.addOption("c", "create-template", false, "Create a template file for importing and exit. Used with Option -t.");
         this.options.addOption("r", "reversed-name-order", false,
@@ -118,6 +120,11 @@ public class CommandOptions {
 
         // creating the template file. 
         if (cmd.hasOption("c")) {
+            if (! cmd.hasOption("t")){
+                this.filetype = "vcf";
+            } else {
+                this.filetype = cmd.getOptionValue("t").toLowerCase();
+            }
             generateTemplateFile();
             System.exit(0);
         }
@@ -130,14 +137,14 @@ public class CommandOptions {
             try {
                 if (cmd.getOptionValue("t").equalsIgnoreCase("")) {
                 }
-                this.filetype = cmd.getOptionValue("t");
+                this.filetype = cmd.getOptionValue("t").toLowerCase();
             } catch (Exception ex) {
                 System.out.println("Option -t has no value given.");
                 Main.printHelp(this.options);
                 System.exit(1);
             }
             // check if a supported file type is specified
-            if (!"vcf".equals(filetype) && !"csv".equals(filetype)) {
+            if (!"vcf".equals(filetype.toLowerCase()) && !"csv".equals(filetype.toLowerCase())) {
                 System.out.println("You have to specify a valid file type.\n");
                 Main.printHelp(this.options);
                 System.exit(1);
@@ -150,9 +157,8 @@ public class CommandOptions {
                 }
             }
         } else {
-            System.out.println("You have to specify the file type.\n");
-            Main.printHelp(this.options);
-            System.exit(1);
+            System.out.println("You have not specified the file type. Using vcf as default.\n");
+            this.filetype = "vcf";
         }
 
         // check if both options (-f and -d) are given or not.
@@ -194,16 +200,16 @@ public class CommandOptions {
     private void generateTemplateFile() {
         // TODO: check if option f is given and take this filename instead
         try {
-            Files.write(Paths.get("template." + cmd.getOptionValue("t")), generateTemplate(cmd.getOptionValue("t")).getBytes());
+            Files.write(Paths.get("template." + this.filetype.toLowerCase()), generateTemplate(this.filetype.toLowerCase()).getBytes());
         } catch (IOException ex) {
             Logger.getLogger(CommandOptions.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 
     private static String generateTemplate(String filetype) {
-        if ("csv".equals(filetype)) {
+        if ("csv".equals(filetype.toLowerCase())) {
             return generateCSVTemplate();
-        } else if ("vcf".equals(filetype)) {
+        } else if ("vcf".equals(filetype.toLowerCase())) {
             return generateVcardTemplate();
         }
         return null;
