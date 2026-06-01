@@ -18,7 +18,7 @@
 package org.berkholz.vcard2fritzXML;
 
 import java.util.ArrayList;
-import java.util.List;
+
 import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 
