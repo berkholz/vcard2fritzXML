@@ -89,13 +89,16 @@ public class CommandOptions {
                 "Directory to search for vCards/CSVs. Every contact is given in a single vCard/CSV file.");
         this.options.addOption("f", "file", true, "Read all contacts from vCard/CSV file or from stdin.");
         this.options.addOption("o", "outfile", true, "Save XML output to file.");
-        this.options.addOption("t", "filetype", true, "Specify the file format. Possible values are: csv, vcf. Default if no -t option is specified: vcf.");
+        this.options.addOption("t", "filetype", true,
+                "Specify the file format. Possible values are: csv, vcf. Default if no -t option is specified: vcf.");
         this.options.addOption("n", "phonebookname", true, "Rename phonebook to given name.");
-        this.options.addOption("c", "create-template", false, "Create a template file for importing and exit. Used with Option -t.");
+        this.options.addOption("c", "create-template", false,
+                "Create a template file for importing and exit. Used with Option -t.");
         this.options.addOption("r", "reversed-name-order", false,
                 "Reverse the default order of the fullname. Default order: <surname> <name>.");
 
-        this.options.addOption("s", "skip-empty-contacts", false, "Skip contacts with no mail address and no telephone numbers.");
+        this.options.addOption("s", "skip-empty-contacts", false,
+                "Skip contacts with no mail address and no telephone numbers.");
         this.options.addOption("u", "use-utf8-reader ", false, "Set the vCard reader to UTF-8 character set");
         this.options.addOption("v", "verbose", false, "Be verbose. [NOT YET IMPLEMENTED.]");
 
@@ -123,7 +126,7 @@ public class CommandOptions {
 
         // creating the template file. 
         if (cmd.hasOption("c")) {
-            if (! cmd.hasOption("t")){
+            if (!cmd.hasOption("t")) {
                 this.filetype = "vcf";
             } else {
                 this.filetype = cmd.getOptionValue("t").toLowerCase();
