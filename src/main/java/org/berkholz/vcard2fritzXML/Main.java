@@ -95,14 +95,14 @@ public class Main {
         // create the phonebooks element, contains a phonebook element
         pbs = new Phonebooks();
 
-        //pb = new Phonebook(Main.cmdOptions.phonebookName, 1);
+        // pb = new Phonebook(Main.cmdOptions.phonebookName, 1);
         pb = new Phonebook(cmdOptions.phonebookName, 1);
 
         pbs.setPhonebooks(pb);
     }
 
     /*
-    FUNCTIONS
+     * FUNCTIONS
      */
     /**
      * Method for reading in the CSV entries from file, directory or stdin.
@@ -116,7 +116,8 @@ public class Main {
                 // Read in a single csv
                 try {
                     // get all csv entries from file
-                    InputStreamReader inStreamReader = new InputStreamReader(new FileInputStream(this.cmdOptions.inFile));
+                    InputStreamReader inStreamReader = new InputStreamReader(
+                            new FileInputStream(this.cmdOptions.inFile));
                     try (CSVParser csvParser = new CSVParser(inStreamReader, CSVFormat.DEFAULT
                             .withFirstRecordAsHeader()
                             .withIgnoreHeaderCase()
@@ -165,7 +166,7 @@ public class Main {
 
                     File file = new File(this.cmdOptions.inFile);
                     // get all vcard entries from file
-                    if(this.cmdOptions.useUTF8Reader)
+                    if (this.cmdOptions.useUTF8Reader)
                         this.vcard = Ezvcard.parse(new Utf8Reader(file)).all();
                     else
                         this.vcard = Ezvcard.parse(file).all();
@@ -178,13 +179,13 @@ public class Main {
                 File dir = new File(this.cmdOptions.inDirectory);
                 this.vcard = new ArrayList<>();
                 if (dir.exists() && dir.isDirectory()) {
-//                    ArrayList<File> files = new ArrayList();
+                    // ArrayList<File> files = new ArrayList();
 
                     for (File f : dir.listFiles(Main.getFileNameFilter("vcf"))) {
                         if (f.isFile()) {
-//                            files.add(f);
+                            // files.add(f);
                             List<VCard> tmpVcard;
-                            if(this.cmdOptions.useUTF8Reader)
+                            if (this.cmdOptions.useUTF8Reader)
                                 tmpVcard = Ezvcard.parse(new Utf8Reader(f)).all();
                             else
                                 tmpVcard = Ezvcard.parse(f).all();
@@ -197,7 +198,7 @@ public class Main {
             // we get our vcard infos over stdin
             try {
                 InputStreamReader inStreamReader;
-                if(this.cmdOptions.useUTF8Reader)
+                if (this.cmdOptions.useUTF8Reader)
                     inStreamReader = new InputStreamReader(System.in, StandardCharsets.UTF_8);
                 else
                     inStreamReader = new InputStreamReader(System.in);
@@ -226,11 +227,12 @@ public class Main {
             // create new contact to represent the actual vcard element
             Contact c1 = new Contact();
 
-            //CSV-HEADER: givenname, familyname, home, work, mobile, fax_work, email
-            //String fax_work = csvElement.get("fax_work");
+            // CSV-HEADER: givenname, familyname, home, work, mobile, fax_work, email
+            // String fax_work = csvElement.get("fax_work");
             c1.setServices(csvElement.get("email"));
 
-            Telephony tp = new Telephony(csvElement.get("home"), csvElement.get("work"), csvElement.get("mobile"), csvElement.get("fax"));
+            Telephony tp = new Telephony(csvElement.get("home"), csvElement.get("work"), csvElement.get("mobile"),
+                    csvElement.get("fax"));
 
             c1.setTelephony(tp);
 
@@ -281,8 +283,10 @@ public class Main {
 
             // TODO: nach mehreren Begriffen suchen, wie cell, mobile etc.
             Telephony tp = new Telephony(Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "home"),
-                    Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"), Main.getTelephoneNumberByType(
-                    vcardElement.getTelephoneNumbers(), "cell"), Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "fax"));
+                    Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "work"),
+                    Main.getTelephoneNumberByType(
+                            vcardElement.getTelephoneNumbers(), "cell"),
+                    Main.getTelephoneNumberByType(vcardElement.getTelephoneNumbers(), "fax"));
 
             c1.setTelephony(tp);
 
@@ -307,12 +311,14 @@ public class Main {
                 given = vcardElement.getOrganization().getValues().get(0);
             }
 
-            // check if formatted name FN is not null end not empty value is saved to givenname
+            // check if formatted name FN is not null end not empty value is saved to
+            // givenname
             // and overrides the organisation value
             if (vcardElement.getFormattedName() != null) {
                 if (vcardElement.getFormattedName().getValue() != null) {
                     given = (vcardElement.getFormattedName().getValue().isEmpty())
-                            ? "" : vcardElement.getFormattedName().getValue();
+                            ? ""
+                            : vcardElement.getFormattedName().getValue();
                 }
             }
             
@@ -321,17 +327,20 @@ public class Main {
                 // Family name has value, but given name is null
                 if (vcardElement.getStructuredName().getFamily() != null) {
                     family = (vcardElement.getStructuredName().getFamily().isEmpty())
-                            ? "" : vcardElement.getStructuredName().getFamily();
+                            ? ""
+                            : vcardElement.getStructuredName().getFamily();
                     // given name has value, but family is null
                 }
                 if (vcardElement.getStructuredName().getGiven() != null) {
                     given = (vcardElement.getStructuredName().getGiven().isEmpty())
-                            ? "" : vcardElement.getStructuredName().getGiven();
+                            ? ""
+                            : vcardElement.getStructuredName().getGiven();
                     // family and givenname is not null, but maybe empty
                 }
             }
             
-            // now we have first the organisation, then the formatted name and last the structured name
+            // now we have first the organisation, then the formatted name and last the
+            // structured name
             // if all of them are empty we take "" as family and given name
             p.setRealName(given, family, cmdOptions.reversedOrder);
 
