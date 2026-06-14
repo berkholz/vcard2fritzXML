@@ -85,6 +85,8 @@ public class CommandOptions {
     public void setOptions() {
         // options definitions
         this.options.addOption("h", "help", false, "Show help.");
+        this.options.addOption("D", "debuglevel", true,
+                "Specify the debug level for the main program. Valid levels are: error, warn, info, debug, trace. Default level is info.");
         this.options.addOption("d", "directory", true,
                 "Directory to search for vCards/CSVs. Every contact is given in a single vCard/CSV file.");
         this.options.addOption("f", "file", true, "Read all contacts from vCard/CSV file or from stdin.");
@@ -122,6 +124,41 @@ public class CommandOptions {
         if (cmd.hasOption("h")) {
             Main.printHelp(this.options);
             System.exit(0);
+        }
+
+        if (cmd.hasOption("D")) {
+            String optionValue = cmd.getOptionValue("D");
+
+            if (!optionValue.isEmpty()) {
+                switch (optionValue.toLowerCase()) {
+                    case "info":
+                        LOG.setLevel(Level.INFO);
+                        Main.LOG.setLevel(Level.INFO);
+                        break;
+                    case "debug":
+                        LOG.setLevel(Level.FINER);
+                        Main.LOG.setLevel(Level.FINER);
+                        break;
+                    case "error":
+                        LOG.setLevel(Level.SEVERE);
+                        Main.LOG.setLevel(Level.SEVERE);
+                        break;
+                    case "trace":
+                        LOG.setLevel(Level.FINEST);
+                        Main.LOG.setLevel(Level.FINEST);
+                        break;
+                    case "warn":
+                        LOG.setLevel(Level.WARNING);
+                        Main.LOG.setLevel(Level.WARNING);
+                        break;
+                    default:
+                        LOG.setLevel(Level.INFO);
+                        Main.LOG.setLevel(Level.INFO);
+                        break;
+                }
+            }
+        } else {
+            LOG.info("Setting the debug level to default: INFO.");
         }
 
         // creating the template file. 
