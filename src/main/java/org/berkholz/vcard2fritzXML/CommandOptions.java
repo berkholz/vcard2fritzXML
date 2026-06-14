@@ -55,6 +55,9 @@ public class CommandOptions {
     boolean useUTF8Reader;
     String filetype;
 
+    // Logger for this class. See, https://logging.apache.org/log4j/2.x/
+    final static Logger LOG = Logger.getLogger(CommandOptions.class.getName());
+
     /**
      *
      * @param args Command Line Parameters
@@ -97,12 +100,12 @@ public class CommandOptions {
         this.options.addOption("v", "verbose", false, "Be verbose. [NOT YET IMPLEMENTED.]");
 
         // instantiate parser with our options
-        //CommandLineParser parser = new GnuParser();
+        // CommandLineParser parser = new GnuParser();
         try {
             CommandLineParser parser = new DefaultParser();
             this.cmd = parser.parse(this.options, this.args);
         } catch (ParseException e) {
-            System.out.println("Error while parsing the command line options. " + e.getLocalizedMessage() + "\n");
+            LOG.log(Level.SEVERE, "Error while parsing the command line options. {0}\n", e.getLocalizedMessage());
             Main.printHelp(options);
             System.exit(1);
         }
@@ -139,43 +142,43 @@ public class CommandOptions {
                 }
                 this.filetype = cmd.getOptionValue("t").toLowerCase();
             } catch (Exception ex) {
-                System.out.println("Option -t has no value given.");
+                LOG.log(Level.SEVERE, "Option -t has no value given.");
                 Main.printHelp(this.options);
                 System.exit(1);
             }
             // check if a supported file type is specified
             if (!"vcf".equals(filetype.toLowerCase()) && !"csv".equals(filetype.toLowerCase())) {
-                System.out.println("You have to specify a valid file type.\n");
+                LOG.log(Level.SEVERE, "You have to specify a valid file type.\n");
                 Main.printHelp(this.options);
                 System.exit(1);
             } else {
                 // check if option -d is given and filetype csv, this is not supported yet.
                 if ("csv".equals(filetype) && cmd.hasOption("d")) {
-                    System.out.println("Option -d in conjuction with filetype csv is not implemented yet. Please specify only a file or use vcard file format.\n");
+                    LOG.log(Level.SEVERE,
+                            "Option -d in conjuction with filetype csv is not implemented yet. Please specify only a file or use vcard file format.\n");
                     Main.printHelp(this.options);
                     System.exit(1);
                 }
             }
         } else {
-            System.out.println("You have not specified the file type. Using vcf as default.\n");
+            LOG.log(Level.INFO, "You have not specified the file type. Using vcf as default.\n");
             this.filetype = "vcf";
         }
 
         // check if both options (-f and -d) are given or not.
         if (!cmd.hasOption("d") & !cmd.hasOption("f")) {
-            System.out.println("You have to specify either the -d or -f option.\n");
+            LOG.log(Level.SEVERE, "You have to specify either the -d or -f option.\n");
             Main.printHelp(options);
             System.exit(1);
         } else if (cmd.hasOption("d") & cmd.hasOption("f")) {
-            System.out.println("You have to specify only one of the -d or -f options, not both.");
+            LOG.log(Level.SEVERE, "You have to specify only one of the -d or -f options, not both.");
             System.exit(1);
         }
 
         // check if option -d is given and read in vcard from dir
         if (cmd.hasOption("d")) {
             inDirectory = cmd.getOptionValue("d");
-            System.out.println("Reading vcard files from directory: "
-                    + inDirectory);
+            LOG.log(Level.FINE, "Reading vcard files from directory: {0}", inDirectory);
         } else if (cmd.hasOption("f")) {
             inFile = cmd.getOptionValue("f");
         }
@@ -200,9 +203,10 @@ public class CommandOptions {
     private void generateTemplateFile() {
         // TODO: check if option f is given and take this filename instead
         try {
-            Files.write(Paths.get("template." + this.filetype.toLowerCase()), generateTemplate(this.filetype.toLowerCase()).getBytes());
+            Files.write(Paths.get("template." + this.filetype.toLowerCase()),
+                    generateTemplate(this.filetype.toLowerCase()).getBytes());
         } catch (IOException ex) {
-            Logger.getLogger(CommandOptions.class.getName()).log(Level.SEVERE, null, ex);
+            LOG.log(Level.SEVERE, ex.getLocalizedMessage());
         }
     }
 

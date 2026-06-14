@@ -28,6 +28,8 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
@@ -55,6 +57,9 @@ public class Main {
     /**
      * VARIABLES
      */
+    // Logger for this class.
+    final static Logger LOG = Logger.getLogger(Main.class.getName());
+
     List<VCard> vcard;
     
     List<CSVRecord> csv;
@@ -119,11 +124,12 @@ public class Main {
                         this.csv = csvParser.getRecords();
                     }
                 } catch (IOException e) {
-                    System.out.println("Error while opening file: " + this.cmdOptions.inFile + " StackTrace:\n" + Arrays.toString(e.getStackTrace()));
+                    LOG.log(Level.SEVERE, "Error while opening file: {0} StackTrace:\n{1}",
+                            new Object[] { this.cmdOptions.inFile, Arrays.toString(e.getStackTrace()) });
                 }
             } else {
                 // TODO: implement -d option for csv files
-                System.out.println("NOT IMPLEMENTED YET!!");
+                LOG.log(Level.SEVERE, "NOT IMPLEMENTED YET!!");
                 System.exit(1);
             }
         } else {
@@ -140,7 +146,7 @@ public class Main {
                     this.csv = csvParser.getRecords();
                 }
             } catch (IOException ioe) {
-                System.out.println("Error while opening the InputStreamReader" + ioe.getLocalizedMessage());
+                LOG.log(Level.SEVERE, "Error while opening the InputStreamReader{0}", ioe.getLocalizedMessage());
             }
         }
     }
@@ -164,7 +170,8 @@ public class Main {
                     else
                         this.vcard = Ezvcard.parse(file).all();
                 } catch (IOException e) {
-                    System.out.println("Error while opening file: " + this.cmdOptions.inFile + " StackTrace:\n" + Arrays.toString(e.getStackTrace()));
+                    LOG.log(Level.SEVERE, "Error while opening file: {0} StackTrace:\n{1}",
+                            new Object[] { this.cmdOptions.inFile, Arrays.toString(e.getStackTrace()) });
                 }
             } else {
                 // check directory if it exists
@@ -197,7 +204,7 @@ public class Main {
                 // get all vcard entries from stdin
                 this.vcard = Ezvcard.parse(inStreamReader).all();
             } catch (IOException ioe) {
-                System.out.println("Error while opening the InputStreamReader" + ioe.getLocalizedMessage());
+                LOG.log(Level.SEVERE, "Error while opening the InputStreamReader{0}", ioe.getLocalizedMessage());
             }
         }
     }
@@ -230,7 +237,7 @@ public class Main {
             // skip contact with no mail address and telephone numbers if
             // command line option -s is given
             if (cmdOptions.skipEmptyContacts && tp.isEmpty() && c1.getServices().getEmail().isEmpty()) {
-                System.out.println("Skipping: " + csvElement.toString());
+                LOG.log(Level.INFO, "Skipping: {0}", csvElement.toString());
                 continue;
             }
 
@@ -283,9 +290,9 @@ public class Main {
             // command line option -s is given
             if (cmdOptions.skipEmptyContacts && tp.isEmpty() && c1.getServices().getEmail().isEmpty()) {
                 if (!Objects.isNull(vcardElement.getFormattedName()))
-                    System.out.println("Skipping: " + vcardElement.getFormattedName().getValue());
+                    LOG.log(Level.INFO, "Skipping: {0}", vcardElement.getFormattedName().getValue());
                 if (!Objects.isNull(vcardElement.getOrganization()))
-                    System.out.println("Skipping: " + vcardElement.getOrganization());
+                    LOG.log(Level.INFO, "Skipping: {0}", vcardElement.getOrganization());
                 continue;
             }
 
@@ -432,7 +439,8 @@ public class Main {
                 }
             }
         } catch (IOException e) {
-            System.out.println("Error while printing the vcard file:\nStackTrace:\n" + Arrays.toString(e.getStackTrace()));
+            LOG.log(Level.SEVERE, "Error while printing the vcard file:\nStackTrace:\n{0}",
+                    Arrays.toString(e.getStackTrace()));
         }
         System.out.flush();
         System.out.println();
@@ -464,7 +472,7 @@ public class Main {
                 main.createContactsFromVCards();
                 break;
             default:
-                System.out.println("Something went wrong at file type determining. Exiting...");
+                LOG.log(Level.SEVERE, "Something went wrong at file type determining. Exiting...");
                 System.exit(2);
         }
         main.marshall();
