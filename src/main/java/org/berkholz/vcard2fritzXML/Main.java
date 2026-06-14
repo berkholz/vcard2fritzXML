@@ -61,7 +61,7 @@ public class Main {
     final static Logger LOG = Logger.getLogger(Main.class.getName());
 
     List<VCard> vcard;
-    
+
     List<CSVRecord> csv;
 
     // Options object including file and directory name
@@ -74,7 +74,7 @@ public class Main {
     // assign it to our phonebooks element
     Phonebook pb;
 
-// ************** CONSTRUCTOR
+    // ************** CONSTRUCTOR
     /**
      * Constructor for Main class.
      *
@@ -304,7 +304,7 @@ public class Main {
 
             String family = "", given = "";
 
-            // check if organisation is given. if N or FN is given 
+            // check if organisation is given. if N or FN is given
             // the values will override the value of the oranisation later
             if (vcardElement.getOrganization() != null
                     && !vcardElement.getOrganization().getValues().get(0).isEmpty()) {
@@ -321,7 +321,7 @@ public class Main {
                             : vcardElement.getFormattedName().getValue();
                 }
             }
-            
+
             // check if strictured name F is not null and not empty
             if (vcardElement.getStructuredName() != null) {
                 // Family name has value, but given name is null
@@ -338,7 +338,7 @@ public class Main {
                     // family and givenname is not null, but maybe empty
                 }
             }
-            
+
             // now we have first the organisation, then the formatted name and last the
             // structured name
             // if all of them are empty we take "" as family and given name

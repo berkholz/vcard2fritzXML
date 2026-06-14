@@ -161,7 +161,7 @@ public class CommandOptions {
             LOG.info("Setting the debug level to default: INFO.");
         }
 
-        // creating the template file. 
+        // creating the template file.
         if (cmd.hasOption("c")) {
             if (!cmd.hasOption("t")) {
                 this.filetype = "vcf";
@@ -234,7 +234,7 @@ public class CommandOptions {
         if (cmd.hasOption("r")) {
             reversedOrder = true;
         }
-        
+
         if (cmd.hasOption("u")) {
             useUTF8Reader = true;
         }
