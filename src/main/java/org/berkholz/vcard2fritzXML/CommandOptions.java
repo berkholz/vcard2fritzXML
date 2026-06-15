@@ -86,7 +86,7 @@ public class CommandOptions {
         // options definitions
         this.options.addOption("h", "help", false, "Show help.");
         this.options.addOption("D", "debuglevel", true,
-                "Specify the debug level for the main program. Valid levels are: error, warn, info, debug, trace. Default level is info.");
+                "Specify the debug level for the main program. Valid levels are: error, warn, info, debug, trace. Default level is warn.");
         this.options.addOption("d", "directory", true,
                 "Directory to search for vCards/CSVs. Every contact is given in a single vCard/CSV file.");
         this.options.addOption("f", "file", true, "Read all contacts from vCard/CSV file or from stdin.");
@@ -152,13 +152,14 @@ public class CommandOptions {
                         Main.LOG.setLevel(Level.WARNING);
                         break;
                     default:
-                        LOG.setLevel(Level.INFO);
-                        Main.LOG.setLevel(Level.INFO);
+                        LOG.setLevel(Level.WARNING);
+                        Main.LOG.setLevel(Level.WARNING);
                         break;
                 }
             }
         } else {
-            LOG.info("Setting the debug level to default: INFO.");
+            LOG.setLevel(Level.WARNING);
+            Main.LOG.setLevel(Level.WARNING);
         }
 
         // creating the template file.
